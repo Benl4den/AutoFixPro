@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoFix_Pro.Data;
+using AutoFix_Pro.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AutoFix_Pro.Data;
-using AutoFix_Pro.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AutoFix_Pro.Controllers
 {
+    // [Authorize] removed from here so guests can access the Index
     public class ServiceTicketsController : Controller
     {
         private readonly AutoFix_ProContext _context;
@@ -20,12 +22,27 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets
-        public async Task<IActionResult> Index()
+        // GUESTS CAN ACCESS
+        public async Task<IActionResult> Index(string searchString, string category)
         {
-            return View(await _context.ServiceTicket.ToListAsync());
+            var services = from s in _context.ServiceTicket
+                           select s;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                services = services.Where(s => s.ServiceName.ToLower().Contains(searchString.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                services = services.Where(x => x.Category == category);
+            }
+
+            return View(await services.ToListAsync());
         }
 
         // GET: ServiceTickets/Details/5
+        // GUESTS CAN ACCESS
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,17 +61,17 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets/Create
+        [Authorize] // LOGIN REQUIRED
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: ServiceTickets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize] // LOGIN REQUIRED
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ClientName,PlateNumber,ServiceType,JobDate,Price")] ServiceTicket serviceTicket)
+        public async Task<IActionResult> Create([Bind("Id,ServiceName,Description,Price,ImageUrl,Category,CreatedAt,IsActive")] ServiceTicket serviceTicket)
         {
             if (ModelState.IsValid)
             {
@@ -66,6 +83,7 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets/Edit/5
+        [Authorize] // LOGIN REQUIRED
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -82,11 +100,10 @@ namespace AutoFix_Pro.Controllers
         }
 
         // POST: ServiceTickets/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize] // LOGIN REQUIRED
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ClientName,PlateNumber,ServiceType,JobDate,Price")] ServiceTicket serviceTicket)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ServiceName,Description,Price,ImageUrl,Category,CreatedAt,IsActive")] ServiceTicket serviceTicket)
         {
             if (id != serviceTicket.Id)
             {
@@ -117,6 +134,7 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets/Delete/5
+        [Authorize] // LOGIN REQUIRED
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -135,6 +153,7 @@ namespace AutoFix_Pro.Controllers
         }
 
         // POST: ServiceTickets/Delete/5
+        [Authorize] // LOGIN REQUIRED
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -1,8 +1,106 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<AutoFix_Pro.Models.ServiceTicket>
+
+@{
+    ViewData["Title"] = "Premium Automotive Care";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@* --- Hero Section --- *@
+<div class="hero-section mb-5">
+    <div class="container py-5 text-center">
+        <div class="py-5">
+            @* Title Fades in first *@
+            <h1 class="display-3 fw-black text-white mb-2 fade-in-up">
+                AutoFix <span class="text-primary">Pro</span>
+            </h1>
+
+            @* Description Fades in second *@
+            <p class="fs-4 text-white-50 mb-4 fade-in-up delay-1">
+                Professional Automotive Care at Your Fingertips
+            </p>
+
+            @* Buttons Fade in last *@
+            <div class="d-flex justify-content-center gap-3 fade-in-up delay-2">
+                <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-primary btn-lg px-5 rounded-pill shadow">View All Services</a>
+                <a asp-action="Privacy" class="btn btn-outline-light btn-lg px-5 rounded-pill">Learn More</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+@* --- Featured Services Grid --- *@
+<div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1">Featured Services</h2>
+            <p class="text-muted mb-0">Our most popular maintenance and repair options.</p>
+        </div>
+        <a asp-controller="ServiceTickets" asp-action="Index" class="text-decoration-none text-primary fw-semibold">
+            See all services <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+        @if (Model != null)
+        {
+            @foreach (var item in Model.Take(3)) // Showing top 3 as featured
+            {
+                <div class="col">
+                    <div class="card h-100 service-card border-0 shadow-sm overflow-hidden bg-dark">
+                        <div class="position-relative">
+                            <img src="@item.ImageUrl" class="card-img-top" alt="@item.ServiceName" style="height: 220px; object-fit: cover; opacity: 0.9;">
+                            <span class="badge position-absolute top-0 start-0 m-3 bg-primary rounded-pill shadow">@item.Category</span>
+                        </div>
+                        <div class="card-body p-4 text-white">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title fw-bold mb-0">@item.ServiceName</h5>
+                                @* Formatted price with the Philippine Peso symbol *@
+                                <span class="h5 text-success fw-bold mb-0">₱@item.Price.ToString("N0")</span>
+                            </div>
+                            <p class="card-text text-muted small mb-4" style="height: 40px; overflow: hidden;">@item.Description</p>
+
+                            @* Use the ServiceTicket Id here for the details page *@
+                            <a asp-controller="ServiceTickets" asp-action="Details" asp-route-id="@item.Id"
+                               class="btn btn-outline-primary w-100 rounded-3">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    /* Hero Background with deep obsidian gradient overlay */
+    .hero-section {
+        background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.6)), url('https://i.pinimg.com/736x/f5/af/3c/f5af3c76f276d9ddbc067730971ba7e3.jpg');
+        background-size: cover;
+        background-position: center;
+        border-radius: 0 0 50px 50px;
+        padding: 100px 0;
+        border-bottom: 2px solid rgba(0, 123, 255, 0.3);
+    }
+
+    /* Glassmorphism Effect */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .service-card {
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+        .service-card:hover {
+            transform: translateY(-12px);
+            background: #1a1a1a !important;
+            border-color: #007bff !important;
+            box-shadow: 0 15px 30px rgba(0, 123, 255, 0.2) !important;
+        }
+
+    .fw-black {
+        font-weight: 900;
+        letter-spacing: -1px;
+    }
+</style>

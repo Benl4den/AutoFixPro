@@ -3,47 +3,98 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AutoFix_Pro</title>
+    <title>@ViewData["Title"] - AutoFix Pro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AutoFix_Pro.styles.css" asp-append-version="true" />
+    <style>
+        body {
+            background-color: #121212; /* Darker background for modern look */
+            color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #1a1a1a !important;
+            border-bottom: 1px solid #333 !important;
+        }
+
+        .footer {
+            background-color: #1a1a1a;
+            border-top: 1px solid #333 !important;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AutoFix_Pro</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark py-3 main-nav mb-0">
+            <div class="container-fluid px-lg-5">
+                @* Brand with Gear Icon Animation *@
+                <a class="navbar-brand fw-bold brand-animate" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-gear-fill text-primary spinning-gear"></i> AUTOFIX <span>PRO</span>
+                </a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    @* Left Side - Navigation *@
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link custom-link" asp-controller="Home" asp-action="Index">HOME</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="ServiceTickets" asp-action="Index">Service Dashboard</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link custom-link" asp-controller="ServiceTickets" asp-action="Index">
+                                    <i class="bi bi-tools me-1 text-primary"></i> MANAGE SERVICES
+                                </a>
+                            </li>
+                        }
                     </ul>
+
+                    @* Right Side - Actions & Profile *@
+                    <div class="d-flex align-items-center gap-2">
+                        <ul class="navbar-nav align-items-center">
+                            @* Only show 'Add Admin' pill if the user is logged in *@
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item me-2">
+                                    <a class="nav-link admin-pill" asp-controller="Account" asp-action="Register">
+                                        <i class="bi bi-person-plus-fill me-1"></i> ADD ADMIN
+                                    </a>
+                                </li>
+                                <div class="nav-divider d-none d-lg-block"></div>
+                            }
+
+                            @* Login / Logout / Profile info *@
+                            <partial name="_LoginPartial" />
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer text-muted">
         <div class="container">
-            &copy; 2026 - AutoFix_Pro - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - <span class="text-primary fw-bold">AutoFix Pro</span> -
+            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-white-50 ms-2">Privacy Policy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

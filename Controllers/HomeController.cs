@@ -1,21 +1,35 @@
 using System.Diagnostics;
-using AutoFix_Pro.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AutoFix_Pro.Data;
+using AutoFix_Pro.Models;
 
 namespace AutoFix_Pro.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AutoFix_ProContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        // Constructor handles both Logging and Database access
+        public HomeController(ILogger<HomeController> logger, AutoFix_ProContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            // 1. Where(s => s.IsActive) - only shows services that are turned on
+            // 2. OrderByDescending - puts the newest repairs at the top
+            // 3. Take(3) - keeps the homepage clean by only showing the "Top 3"
+            var services = await _context.ServiceTicket
+                .Where(s => s.IsActive)
+                .OrderByDescending(s => s.Id)
+                .Take(3)
+                .ToListAsync();
+
+            return View(services);
         }
 
         public IActionResult Privacy()

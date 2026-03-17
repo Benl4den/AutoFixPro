@@ -3,6 +3,7 @@ using System;
 using AutoFix_Pro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoFix_Pro.Migrations
 {
     [DbContext(typeof(AutoFix_ProContext))]
-    partial class AutoFix_ProContextModelSnapshot : ModelSnapshot
+    [Migration("20260317200527_UpdateContextToIdentity")]
+    partial class UpdateContextToIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.23");

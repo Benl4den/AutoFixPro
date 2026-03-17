@@ -1,53 +1,96 @@
 ﻿@model AutoFix_Pro.Models.ServiceTicket
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add New Service";
 }
 
-<h1>Create</h1>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">Create New Auto Service</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h4>ServiceTicket</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ClientName" class="control-label"></label>
-                <input asp-for="ClientName" class="form-control" />
-                <span asp-validation-for="ClientName" class="text-danger"></span>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceName" class="form-label fw-bold"></label>
+                                    <input asp-for="ServiceName" class="form-control" placeholder="e.g. Full Synthetic Oil Change" />
+                                    <span asp-validation-for="ServiceName" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Category" class="form-label fw-bold"></label>
+                                    <select asp-for="Category" class="form-select">
+                                        <option value="">-- Select Category --</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Repair">Repair</option>
+                                        <option value="Diagnostics">Diagnostics</option>
+                                        <option value="Detailing">Detailing</option>
+                                    </select>
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Price" class="form-label fw-bold"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₱</span>
+                                        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                                    </div>
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-5 text-center">
+                                <label class="form-label fw-bold">Image Preview</label>
+                                <div class="border rounded bg-light d-flex align-items-center justify-content-center" style="height: 180px; overflow: hidden;">
+                                    <img id="imgPreview" src="https://placehold.co/600x400?text=Paste+URL" class="img-fluid" style="object-fit: cover; height: 100%; width: 100%;" />
+                                </div>
+                                <div class="mt-3">
+                                    <label asp-for="ImageUrl" class="form-label fw-bold">Image URL</label>
+                                    <input asp-for="ImageUrl" id="urlInput" class="form-control form-control-sm" placeholder="https://..." />
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label asp-for="Description" class="form-label fw-bold"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary px-5">Save Service</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="PlateNumber" class="control-label"></label>
-                <input asp-for="PlateNumber" class="form-control" />
-                <span asp-validation-for="PlateNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ServiceType" class="control-label"></label>
-                <input asp-for="ServiceType" class="form-control" />
-                <span asp-validation-for="ServiceType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="JobDate" class="control-label"></label>
-                <input asp-for="JobDate" class="form-control" />
-                <span asp-validation-for="JobDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Script to update the preview image when the URL changes
+        document.getElementById('urlInput').addEventListener('input', function() {
+            const url = this.value;
+            const preview = document.getElementById('imgPreview');
+            if (url) {
+                preview.src = url;
+            } else {
+                preview.src = "https://placehold.co/600x400?text=Paste+URL";
+            }
+        });
+    </script>
 }
