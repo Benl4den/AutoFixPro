@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="~/AutoFix_Pro.styles.css" asp-append-version="true" />
     <style>
         body {
-            background-color: #121212; /* Darker background for modern look */
+            background-color: #0d0d0d !important;
             color: #f8f9fa;
         }
 
@@ -19,14 +19,29 @@
             border-bottom: 1px solid #333 !important;
         }
 
+        /* FORCE IDENTITY PROFILE TO DARK */
+        /* This targets the specific white boxes in your screenshot */
+        .form-control, .form-floating input, input {
+            background-color: #1a1a1a !important;
+            color: white !important;
+            border: 1px solid #444 !important;
+        }
+
+            /* Fix for readonly/disabled fields (like your Username email) */
+            input:disabled, input[readonly] {
+                background-color: #252525 !important;
+                opacity: 0.8;
+            }
+
+        .nav-pills .nav-link.active {
+            background-color: #007bff !important;
+        }
+
         .footer {
             background-color: #1a1a1a;
             border-top: 1px solid #333 !important;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 60px;
-            line-height: 60px;
+            padding: 20px 0;
+            margin-top: 40px;
         }
     </style>
 </head>
@@ -34,9 +49,8 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark py-3 main-nav mb-0">
             <div class="container-fluid px-lg-5">
-                @* Brand with Gear Icon Animation *@
                 <a class="navbar-brand fw-bold brand-animate" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-gear-fill text-primary spinning-gear"></i> AUTOFIX <span>PRO</span>
+                    <i class="bi bi-gear-fill text-primary spinning-gear"></i> AUTOFIX <span class="text-primary">PRO</span>
                 </a>
 
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -44,11 +58,7 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    @* Left Side - Navigation *@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        <li class="nav-item">
-                            <a class="nav-link custom-link" asp-controller="Home" asp-action="Index">HOME</a>
-                        </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -59,21 +69,11 @@
                         }
                     </ul>
 
-                    @* Right Side - Actions & Profile *@
                     <div class="d-flex align-items-center gap-2">
                         <ul class="navbar-nav align-items-center">
-                            @* Only show 'Add Admin' pill if the user is logged in *@
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                <li class="nav-item me-2">
-                                    <a class="nav-link admin-pill" asp-controller="Account" asp-action="Register">
-                                        <i class="bi bi-person-plus-fill me-1"></i> ADD ADMIN
-                                    </a>
-                                </li>
-                                <div class="nav-divider d-none d-lg-block"></div>
-                            }
+                          
 
-                            @* Login / Logout / Profile info *@
+                            @* This likely contains the SECOND "Add Admin/Register" link - check this file! *@
                             <partial name="_LoginPartial" />
                         </ul>
                     </div>
@@ -82,16 +82,57 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container mt-4">
         <main role="main" class="pb-5">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="footer text-muted">
+    <footer class="footer bg-dark text-white pt-5 pb-3">
         <div class="container">
-            &copy; 2026 - <span class="text-primary fw-bold">AutoFix Pro</span> -
-            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-white-50 ms-2">Privacy Policy</a>
+            <div class="row text-start">
+                <div class="col-md-4 mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-wrench-adjustable text-primary fs-4"></i>
+                        <h5 class="fw-bold m-0">AutoFix <span class="text-primary">Pro</span></h5>
+                    </div>
+                    <p class="text-muted small">Professional automotive care at your fingertips. Trusted by thousands of car owners.</p>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-4">Quick Links</h5>
+                    <ul class="list-unstyled footer-links">
+                        <li><a href="/Services" class="text-muted text-decoration-none">Services</a></li>
+                        <li><a href="/About" class="text-muted text-decoration-none">About Us</a></li>
+                        <li><a href="/Contact" class="text-muted text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-4">Contact Info</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i> 123 Mechanic St, Metro Manila</li>
+                        <li class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> (02) 1234-5678</li>
+                        <li class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i> info@autofixpro.com</li>
+                    </ul>
+
+                    <div class="footer-cta-row d-flex gap-3">
+                        <a href="tel:(02)1234-5678" class="footer-btn-blue text-decoration-none">
+                            <i class="bi bi-telephone"></i>
+                            <span>Call Us Now</span>
+                        </a>
+                        <a href="/Book" class="footer-btn-glass-outline text-decoration-none">
+                            <span>Book Online</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary mt-4">
+            <div class="text-center">
+                <p class="text-muted small mb-0">&copy; 2026 AutoFix Pro - Privacy Policy</p>
+            </div>
         </div>
     </footer>
 

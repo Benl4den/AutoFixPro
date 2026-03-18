@@ -252,3 +252,231 @@ body {
         border-color: var(--primary-blue);
         box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
     }
+/* Custom Logout Pill */
+.logout-pill {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50px !important;
+    color: #adb5bd !important;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease !important;
+}
+
+    .logout-pill:hover {
+        background: rgba(220, 53, 69, 0.1) !important; /* Subtle Red tint */
+        border-color: rgba(220, 53, 69, 0.5) !important;
+        color: #ff4d4d !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+    }
+/* --- Admin Hover Dropdown Menu --- */
+
+/* Show on Hover */
+.admin-dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
+}
+
+/* Menu Styling */
+.custom-admin-menu {
+    background-color: #1a1a1a !important; /* Matte dark */
+    border: 1px solid #333 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    min-width: 200px;
+    padding: 10px 0;
+}
+
+.dropdown-item {
+    color: #adb5bd !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+    .dropdown-item:hover {
+        background-color: rgba(255,255,255,0.05) !important;
+        color: #fff !important;
+        padding-left: 20px; /* Subtle sliding effect */
+    }
+
+/* Animation */
+.animate {
+    animation-duration: 0.2s;
+    -webkit-animation-duration: 0.2s;
+    animation-fill-mode: both;
+    -webkit-animation-fill-mode: both;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.slideIn {
+    animation-name: slideIn;
+}
+
+/* Hide the dropdown arrow triangle */
+.dropdown-toggle::after {
+    display: none !important;
+}
+/* Precise dimensions and centering for the Super Admin badge */
+.admin-dropdown .badge.bg-danger {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    /* Adjust Dimensions */
+    min-width: 100px; /* Standardize width */
+    height: 24px; /* Standardize height to match icon */
+    /* Fix Centering */
+    margin-top: 2px !important;
+    padding: 0 10px !important; /* Side padding only, height handles vertical */
+    /* Font Polish */
+    font-size: 10px !important;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    line-height: 1 !important; /* Prevents text from pushing the box down */
+}
+
+/* Ensure the parent link is a flex container */
+.admin-dropdown .dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1px; /* Space between icon and badge */
+}
+/* --- High-End Blue Accent Badge --- */
+.super-admin-badge-blue {
+    background-color: #1d4ed8; /* Vibrant Blue */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-radius: 10px; /* Squircle/Rounded look */
+    gap: 10px;
+    height: 36px; /* Sized to fit comfortably in your navbar */
+    box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4); /* The "Neon" glow */
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+    .super-admin-badge-blue i {
+        color: white;
+        font-size: 1.1rem;
+        filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));
+    }
+
+    .super-admin-badge-blue .badge-text {
+        color: white;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    /* Hover Animation - Subtle Glow increase */
+    .super-admin-badge-blue:hover {
+        background-color: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(29, 78, 216, 0.6);
+    }
+/* --- High-End Login Outline Style --- */
+.login-button-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 20px;
+    height: 38px; /* Slightly taller than the admin badge for emphasis */
+    background: transparent;
+    border: 2px solid #1d4ed8; /* Vibrant Blue */
+    border-radius: 10px;
+    color: #1d4ed8 !important;
+    text-decoration: none !important;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(29, 78, 216, 0.1);
+}
+
+    .login-button-outline i {
+        font-size: 1.1rem;
+    }
+
+    /* Hover State: Fills with Blue and Glows */
+    .login-button-outline:hover {
+        background-color: #1d4ed8;
+        color: white !important;
+        box-shadow: 0 0 20px rgba(29, 78, 216, 0.5);
+        transform: translateY(-2px);
+    }
+
+    .login-button-outline:active {
+        transform: translateY(0);
+    }
+/* Container alignment */
+.footer-cta-row {
+    margin-top: 1.5rem;
+}
+
+/* Primary Call Button - Vibrant Blue */
+.footer-btn-blue {
+    background-color: #2563eb; /* AutoFix Blue */
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+    .footer-btn-blue:hover {
+        background-color: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    }
+
+/* Secondary Book Button - Dark Glass Outline */
+.footer-btn-glass-outline {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+}
+
+    .footer-btn-glass-outline:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+    }
+.footer ul li {
+    padding-bottom: 8px; /* Adds space between the address, phone, and email */
+    display: flex;
+    align-items: center;
+}
+
+.footer-links a:hover {
+    color: #2563eb !important; /* Highlights links in your brand blue on hover */
+}
