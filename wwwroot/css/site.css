@@ -480,3 +480,39 @@ body {
 .footer-links a:hover {
     color: #2563eb !important; /* Highlights links in your brand blue on hover */
 }
+.cta-banner-content {
+    /* Gradient matching the reddish-dark glow in image_e94f21.png */
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #450a0a 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .cta-banner-content h2 {
+        font-size: 2.5rem; /* Large, bold heading */
+        letter-spacing: -0.5px;
+    }
+
+/* Ensure the container has enough breathing room from the footer */
+.cta-banner-container {
+    padding-bottom: 2rem;
+}
+.feature-card {
+    background-color: #161b22; /* Deep dark blue-grey */
+    border: 1px solid #30363d;
+    transition: transform 0.3s ease;
+}
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        border-color: #007bff;
+    }
+
+.feature-icon-bg {
+    width: 45px;
+    height: 45px;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}

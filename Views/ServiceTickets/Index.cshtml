@@ -8,13 +8,18 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="fw-bold text-primary"><i class="bi bi-list-task"></i> Service Inventory</h1>
-            <p class="text-muted">Manage your automotive service offerings and pricing</p>
+            <p class="text-muted">Explore our professional automotive service offerings</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
-            <i class="bi bi-plus-lg"></i> Add New Service
-        </a>
+        @* 1. HIDE ADD BUTTON FROM GUESTS *@
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
+                <i class="bi bi-plus-lg"></i> Add New Service
+            </a>
+        }
     </div>
 
+    @* Search and Filter Section remains visible to everyone *@
     <div class="card shadow-sm border-0 mb-4 bg-dark text-white">
         <div class="card-body">
             <form asp-controller="ServiceTickets" asp-action="Index" method="get">
@@ -79,15 +84,26 @@
                             <td class="text-success fw-bold">₱@item.Price.ToString("N2")</td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning border-0" title="Edit">
-                                        <i class="bi bi-pencil-square fs-5"></i>
-                                    </a>
+                                    @* 2. HIDE EDIT FROM GUESTS *@
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning border-0" title="Edit">
+                                            <i class="bi bi-pencil-square fs-5"></i>
+                                        </a>
+                                    }
+
+                                    @* Details is always visible to everyone *@
                                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info border-0" title="View">
                                         <i class="bi bi-eye fs-5"></i>
                                     </a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger border-0" title="Delete">
-                                        <i class="bi bi-trash fs-5"></i>
-                                    </a>
+
+                                    @* 3. HIDE DELETE FROM GUESTS *@
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger border-0" title="Delete">
+                                            <i class="bi bi-trash fs-5"></i>
+                                        </a>
+                                    }
                                 </div>
                             </td>
                         </tr>

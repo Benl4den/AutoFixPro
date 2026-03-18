@@ -19,15 +19,12 @@
             border-bottom: 1px solid #333 !important;
         }
 
-        /* FORCE IDENTITY PROFILE TO DARK */
-        /* This targets the specific white boxes in your screenshot */
         .form-control, .form-floating input, input {
             background-color: #1a1a1a !important;
             color: white !important;
             border: 1px solid #444 !important;
         }
 
-            /* Fix for readonly/disabled fields (like your Username email) */
             input:disabled, input[readonly] {
                 background-color: #252525 !important;
                 opacity: 0.8;
@@ -71,9 +68,6 @@
 
                     <div class="d-flex align-items-center gap-2">
                         <ul class="navbar-nav align-items-center">
-                          
-
-                            @* This likely contains the SECOND "Add Admin/Register" link - check this file! *@
                             <partial name="_LoginPartial" />
                         </ul>
                     </div>
@@ -88,28 +82,110 @@
         </main>
     </div>
 
+    @* --- HIDE MARKETING SECTIONS FOR ADMINS OR ON LOGIN/REGISTER PAGES --- *@
+    @{
+        var isIdentityArea = ViewContext.RouteData.Values["area"]?.ToString() == "Identity";
+        var isUserLoggedIn = User.Identity.IsAuthenticated;
+    }
+
+    @if (!isIdentityArea && !isUserLoggedIn)
+    {
+        <section class="why-choose-section py-5">
+            <div class="container text-center">
+                <h1 class="fw-bold text-white mb-2">Why Choose AutoFix Pro?</h1>
+                <p class="text-muted mb-5">Excellence in every service, every time</p>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 rounded-4 text-start h-100">
+                            <div class="feature-icon-bg mb-3">
+                                <i class="bi bi-shield-check text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold text-white">Certified Technicians</h5>
+                            <p class="text-muted small mb-0">ASE-certified mechanics with years of experience</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 rounded-4 text-start h-100">
+                            <div class="feature-icon-bg mb-3">
+                                <i class="bi bi-clock text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold text-white">Fast Turnaround</h5>
+                            <p class="text-muted small mb-0">Most services completed within 24 hours</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 rounded-4 text-start h-100">
+                            <div class="feature-icon-bg mb-3">
+                                <i class="bi bi-star text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold text-white">Quality Guarantee</h5>
+                            <p class="text-muted small mb-0">90-day warranty on all parts and labor</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 rounded-4 text-start h-100">
+                            <div class="feature-icon-bg mb-3">
+                                <i class="bi bi-check-circle text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold text-white">Honest Pricing</h5>
+                            <p class="text-muted small mb-0">Transparent quotes with no hidden fees</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-banner-container my-5">
+            <div class="container">
+                <div class="cta-banner-content text-center p-5 rounded-4 shadow-lg">
+                    <h2 class="fw-bold text-white mb-3">Ready to Get Your Car Serviced?</h2>
+                    <p class="text-white-50 mb-4">Book an appointment today and experience professional automotive care</p>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="tel:(02)1234-5678" class="footer-btn-blue text-decoration-none">
+                            <i class="bi bi-telephone-fill me-2"></i>
+                            <span>Call Us Now</span>
+                        </a>
+                        <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-light px-4 py-2">
+                            Book Online
+                        </a>
+
+                        <a href="/Book" class="footer-btn-glass-outline text-decoration-none">
+                            <span>Book Online</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+
     <footer class="footer bg-dark text-white pt-5 pb-3">
         <div class="container">
             <div class="row text-start">
                 <div class="col-md-4 mb-4">
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <i class="bi bi-wrench-adjustable text-primary fs-4"></i>
-                        <h5 class="fw-bold m-0">AutoFix <span class="text-primary">Pro</span></h5>
+                        <h5 class="fw-bold m-0 text-white">AutoFix <span class="text-primary">Pro</span></h5>
                     </div>
                     <p class="text-muted small">Professional automotive care at your fingertips. Trusted by thousands of car owners.</p>
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-4">Quick Links</h5>
+                    <h5 class="fw-bold mb-4 text-white">Quick Links</h5>
                     <ul class="list-unstyled footer-links">
-                        <li><a href="/Services" class="text-muted text-decoration-none">Services</a></li>
+                        <li>
+                            <a asp-controller="ServiceTickets" asp-action="Index" class="text-muted text-decoration-none">
+                                Services
+                            </a>
+                        </li>
                         <li><a href="/About" class="text-muted text-decoration-none">About Us</a></li>
                         <li><a href="/Contact" class="text-muted text-decoration-none">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-4">Contact Info</h5>
+                    <h5 class="fw-bold mb-4 text-white">Contact Info</h5>
                     <ul class="list-unstyled mb-4">
                         <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i> 123 Mechanic St, Metro Manila</li>
                         <li class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> (02) 1234-5678</li>
@@ -126,7 +202,6 @@
                         </a>
                     </div>
                 </div>
-
             </div>
 
             <hr class="border-secondary mt-4">
