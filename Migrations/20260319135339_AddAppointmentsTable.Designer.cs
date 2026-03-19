@@ -11,14 +11,44 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoFix_Pro.Migrations
 {
     [DbContext(typeof(AutoFix_ProContext))]
-    [Migration("20260317200527_UpdateContextToIdentity")]
-    partial class UpdateContextToIdentity
+    [Migration("20260319135339_AddAppointmentsTable")]
+    partial class AddAppointmentsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.23");
+
+            modelBuilder.Entity("AutoFix_Pro.Models.Appointment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("VehiclePlate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Appointments");
+                });
 
             modelBuilder.Entity("AutoFix_Pro.Models.ServiceTicket", b =>
                 {

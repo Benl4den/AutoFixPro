@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 text-white">
+        <h2 class="fw-bold"><i class="bi bi-people-fill me-2"></i>Staff Management</h2>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary shadow">
+            <i class="bi bi-person-plus-fill me-1"></i> Register New Admin
+        </a>
+    </div>
+
+    <div class="card bg-dark border-dark-blue shadow-lg">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead class="bg-dark-blue">
+                    <tr>
+                        <th class="py-3 px-4">Email / Username</th>
+                        <th class="py-3 px-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td class="align-middle px-4">
+                                <div>@user.Email</div>
+                                @if (user.Email == User.Identity.Name)
+                                {
+                                    <span class="badge bg-info text-dark">You (SuperAdmin)</span>
+                                }
+                            </td>
+                            <td class="text-center align-middle">
+                                @if (user.Email != User.Identity.Name)
+                                {
+                                    <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Are you sure you want to remove this staff member?');">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="bi bi-trash"></i> Remove
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-dark-blue {
+        border: 2px solid #004085 !important;
+    }
+
+    .bg-dark-blue {
+        background-color: #004085 !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 64, 133, 0.1);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 64, 133, 0.2) !important;
+        cursor: pointer;
+    }
+</style>

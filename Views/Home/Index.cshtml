@@ -27,6 +27,67 @@
     </div>
 </div>
 
+
+@* The margin-top is now 30px to keep it lower and clear of the hero curve *@
+<div class="container mb-5" style="margin-top: 30px;">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            @* Using a custom class "border-dark-blue" for the specific color *@
+            <div class="card bg-dark border-dark-blue shadow-lg">
+                <div class="card-body p-4">
+                    <form asp-controller="ServiceTickets" asp-action="Index" method="get">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    @* Matching the icon background to the dark blue theme *@
+                                    <span class="input-group-text bg-dark-blue border-dark-blue text-white">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" name="searchString"
+                                           class="form-control bg-dark border-dark-blue text-white"
+                                           placeholder="What service does your car need?" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <select name="category" class="form-select bg-dark border-dark-blue text-white">
+                                    <option value="">All Categories</option>
+                                    <option value="Maintenance">Maintenance</option>
+                                    <option value="Repair">Repair</option>
+                                    <option value="Diagnostics">Diagnostics</option>
+                                    <option value="Detailing">Detailing</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100 shadow">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Dark Blue Theme Classes */
+    .border-dark-blue {
+        border: 2px solid #004085 !important; /* Deep Navy Blue */
+    }
+
+    .bg-dark-blue {
+        background-color: #004085 !important;
+    }
+
+    /* Adds a subtle glow to the dark blue border */
+    .card.border-dark-blue {
+        box-shadow: 0 0 15px rgba(0, 64, 133, 0.3) !important;
+    }
+</style>
+
 @* --- Featured Services Grid --- *@
 <div class="container">
     <div class="d-flex justify-content-between align-items-end mb-4">
@@ -103,4 +164,17 @@
         font-weight: 900;
         letter-spacing: -1px;
     }
+    /* Fix for the dropdown arrow and focus state in dark mode */
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #1a1a1a;
+            color: white;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+
+   
 </style>

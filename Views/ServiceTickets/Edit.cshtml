@@ -4,53 +4,72 @@
     ViewData["Title"] = "Edit Service";
 }
 
-<div class="container mt-4">
-    <h1>Edit Service Information</h1>
-    <hr />
+<div class="container py-4">
+    @* 1. Updated header to match the brand color *@
+    <h1 class="fw-bold text-primary"><i class="bi bi-pencil-square"></i> Edit Service Information</h1>
+    <p class="text-muted">Update the details for @Model.ServiceName</p>
+    <hr class="border-secondary" />
+
     <div class="row">
-        <div class="col-md-8 shadow-sm p-4 bg-white border rounded">
+        @* 2. Changed bg-white to bg-dark and border to secondary *@
+        <div class="col-md-8 shadow-lg p-4 bg-dark border border-secondary rounded text-white">
             <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="Id" />
 
                 <div class="form-group mb-3">
-                    <label asp-for="ServiceName" class="control-label fw-bold"></label>
-                    <input asp-for="ServiceName" class="form-control" />
+                    <label asp-for="ServiceName" class="control-label fw-bold text-white-50"></label>
+                    @* 3. Applied dark input styling *@
+                    <input asp-for="ServiceName" class="form-control bg-dark border-secondary text-white" />
                     <span asp-validation-for="ServiceName" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Category" class="control-label fw-bold"></label>
-                    <select asp-for="Category" class="form-control">
+                    <label asp-for="Category" class="control-label fw-bold text-white-50"></label>
+                    @* 4. Applied dark select styling *@
+                    <select asp-for="Category" class="form-select bg-dark border-secondary text-white">
                         <option value="Maintenance">Maintenance</option>
                         <option value="Repair">Repair</option>
                         <option value="Diagnostics">Diagnostics</option>
+                        <option value="Detailing">Detailing</option>
                     </select>
                     <span asp-validation-for="Category" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <label asp-for="Description" class="control-label fw-bold"></label>
-                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <label asp-for="Description" class="control-label fw-bold text-white-50"></label>
+                    @* 5. Applied dark textarea styling *@
+                    <textarea asp-for="Description" class="form-control bg-dark border-secondary text-white" rows="3"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label asp-for="Price" class="control-label fw-bold"></label>
-                        <input asp-for="Price" class="form-control" />
+                        <label asp-for="Price" class="control-label fw-bold text-white-50"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-secondary border-secondary text-white">₱</span>
+                            <input asp-for="Price" class="form-control bg-dark border-secondary text-white" />
+                        </div>
                         <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label asp-for="ImageUrl" class="control-label fw-bold"></label>
-                        <input asp-for="ImageUrl" class="form-control" />
+                        <label asp-for="ImageUrl" class="control-label fw-bold text-white-50"></label>
+                        <input asp-for="ImageUrl" class="form-control bg-dark border-secondary text-white" id="urlInput" />
                         <span asp-validation-for="ImageUrl" class="text-danger"></span>
                     </div>
                 </div>
 
+                @* 6. Live Preview for the existing image *@
+                <div class="mb-3 text-center">
+                    <label class="form-label fw-bold text-white-50">Current Image Preview</label>
+                    <div class="border border-secondary rounded bg-black d-flex align-items-center justify-content-center" style="height: 150px; overflow: hidden;">
+                        <img id="imgPreview" src="@Model.ImageUrl" class="img-fluid" style="object-fit: cover; height: 100%; width: 100%;" />
+                    </div>
+                </div>
+
                 <div class="form-group mt-4 d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                    <button type="submit" class="btn btn-warning px-5">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-outline-light px-4">Back to List</a>
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -61,4 +80,17 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    @* 7. Added the same preview script from Create for a seamless experience *@
+    <script>
+        document.getElementById('urlInput').addEventListener('input', function() {
+            const url = this.value;
+            const preview = document.getElementById('imgPreview');
+            if (url) {
+                preview.src = url;
+            } else {
+                preview.src = "https://placehold.co/600x400/212529/6c757d?text=Paste+URL";
+            }
+        });
+    </script>
 }

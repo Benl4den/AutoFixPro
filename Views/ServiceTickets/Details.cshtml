@@ -23,10 +23,19 @@
             <p class="lead text-muted mb-5">@Model.Description</p>
 
             <div class="d-grid gap-2 d-md-flex">
-                <button class="btn btn-primary btn-lg px-5">Book This Service</button>
+                @* UPDATED: Changed from <button> to <a> with Tag Helpers *@
+                <a asp-controller="Booking"
+                   asp-action="Create"
+                   asp-route-serviceType="@Model.ServiceName"
+                   class="btn btn-primary btn-lg px-5 shadow fw-bold">
+                    Book This Service
+                </a>
+
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-lg">Edit Service</a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-lg">
+                        <i class="bi bi-pencil-square me-1"></i> Edit Service
+                    </a>
                 }
             </div>
         </div>

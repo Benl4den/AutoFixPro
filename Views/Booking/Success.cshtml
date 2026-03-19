@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Success - AutoFix Pro";
+}
+
+<div class="container py-5 text-center">
+    @* Using the dark-blue border and obsidian background for consistency *@
+    <div class="py-5 bg-dark border-dark-blue rounded-4 shadow-lg text-white mx-auto" style="max-width: 600px;">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+
+        <h1 class="display-5 fw-bold mt-3">Booking Confirmed!</h1>
+        <p class="fs-5 text-white-50 mb-4 px-4">
+            Your appointment has been successfully recorded. We'll see you at the shop!
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 shadow">
+                <i class="bi bi-house-door me-2"></i>Back to Home
+            </a>
+            <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-light px-4">
+                View Services
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Dark Blue border to match your brand style */
+    .border-dark-blue {
+        border: 2px solid #004085 !important;
+    }
+</style>

@@ -6,11 +6,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AutoFix_Pro.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateContextToIdentity : Migration
+    public partial class InitialAllTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Appointments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CustomerName = table.Column<string>(type: "TEXT", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ServiceType = table.Column<string>(type: "TEXT", nullable: false),
+                    VehiclePlate = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -48,6 +65,25 @@ namespace AutoFix_Pro.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServiceTicket",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ServiceName = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    Price = table.Column<decimal>(type: "TEXT", nullable: false),
+                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
+                    Category = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceTicket", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -198,6 +234,9 @@ namespace AutoFix_Pro.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Appointments");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -211,6 +250,9 @@ namespace AutoFix_Pro.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ServiceTicket");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

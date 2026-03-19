@@ -18,6 +18,8 @@ namespace AutoFix_Pro.Data
         // This links your ServiceTicket model to the database table
         public DbSet<AutoFix_Pro.Models.ServiceTicket> ServiceTicket { get; set; } = default!;
 
+        public DbSet<AutoFix_Pro.Models.Appointment> Appointments { get; set; } = default!;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // This ensures the context knows to use SQLite if not already configured in Program.cs

@@ -5,7 +5,7 @@
 namespace AutoFix_Pro.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentity : Migration
+    public partial class AddAppointmentsTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,0 +1,79 @@
+﻿@model AutoFix_Pro.Models.Appointment
+
+@{
+    ViewData["Title"] = "Book a Service";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            @* Using the Dark Blue border we established for the Home Page *@
+            <div class="card bg-dark border-dark-blue shadow-lg text-white">
+                <div class="card-header bg-dark-blue py-3 border-0">
+                    <h3 class="mb-0 fw-bold"><i class="bi bi-calendar-check me-2"></i>Schedule Service</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="CustomerName" class="form-label fw-bold text-white-50"></label>
+                            <input asp-for="CustomerName" class="form-control bg-dark border-dark-blue text-white" placeholder="Enter your full name" />
+                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BookingDate" class="form-label fw-bold text-white-50"></label>
+                                <input asp-for="BookingDate" type="datetime-local" class="form-control bg-dark border-dark-blue text-white" />
+                                <span asp-validation-for="BookingDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="VehiclePlate" class="form-label fw-bold text-white-50"></label>
+                                <input asp-for="VehiclePlate" class="form-control bg-dark border-dark-blue text-white" placeholder="e.g., ABC-1234" />
+                                <span asp-validation-for="VehiclePlate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ServiceType" class="form-label fw-bold text-white-50"></label>
+                            <select asp-for="ServiceType" class="form-select bg-dark border-dark-blue text-white">
+                                <option value="" disabled selected>Choose a service...</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Repair">Repair</option>
+                                <option value="Diagnostics">Diagnostics</option>
+                                <option value="Detailing">Detailing</option>
+                            </select>
+                            <span asp-validation-for="ServiceType" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg shadow fw-bold">Confirm Appointment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-dark-blue {
+        border: 2px solid #004085 !important;
+    }
+
+    .bg-dark-blue {
+        background-color: #004085 !important;
+    }
+
+    /* Ensure the date picker icon is visible in dark mode */
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

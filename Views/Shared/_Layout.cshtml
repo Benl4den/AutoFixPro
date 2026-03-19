@@ -19,6 +19,18 @@
             border-bottom: 1px solid #333 !important;
         }
 
+        /* Styling for the custom nav links */
+        .custom-link {
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+            .custom-link:hover {
+                color: #007bff !important;
+            }
+
         .form-control, .form-floating input, input {
             background-color: #1a1a1a !important;
             color: white !important;
@@ -59,15 +71,39 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link custom-link" asp-controller="ServiceTickets" asp-action="Index">
+                                <a class="nav-link custom-link text-white" asp-controller="ServiceTickets" asp-action="Index">
                                     <i class="bi bi-tools me-1 text-primary"></i> MANAGE SERVICES
                                 </a>
                             </li>
+
+                            @if (User.IsInRole("SuperAdmin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link custom-link text-white" asp-controller="UserManagement" asp-action="Index">
+                                        <i class="bi bi-shield-lock me-1 text-primary"></i> STAFF LIST
+                                    </a>
+                                </li>
+
+                                @* ADDED: Admin Panel Link for Appointments *@
+                                <li class="nav-item">
+                                    <a class="nav-link custom-link text-warning fw-bold" asp-controller="Booking" asp-action="Index">
+                                        <i class="bi bi-calendar-check me-1"></i> ADMIN PANEL
+                                    </a>
+                                </li>
+                            }
                         }
                     </ul>
 
                     <div class="d-flex align-items-center gap-2">
                         <ul class="navbar-nav align-items-center">
+                            @if (User.IsInRole("SuperAdmin"))
+                            {
+                                <li class="nav-item me-2">
+                                    <a class="btn btn-sm btn-outline-primary fw-bold px-3" asp-area="Identity" asp-page="/Account/Register">
+                                        <i class="bi bi-person-plus-fill me-1"></i> ADD ADMIN
+                                    </a>
+                                </li>
+                            }
                             <partial name="_LoginPartial" />
                         </ul>
                     </div>
@@ -82,7 +118,6 @@
         </main>
     </div>
 
-    @* --- HIDE MARKETING SECTIONS FOR ADMINS OR ON LOGIN/REGISTER PAGES --- *@
     @{
         var isIdentityArea = ViewContext.RouteData.Values["area"]?.ToString() == "Identity";
         var isUserLoggedIn = User.Identity.IsAuthenticated;
@@ -149,10 +184,6 @@
                         </a>
                         <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-light px-4 py-2">
                             Book Online
-                        </a>
-
-                        <a href="/Book" class="footer-btn-glass-outline text-decoration-none">
-                            <span>Book Online</span>
                         </a>
                     </div>
                 </div>
