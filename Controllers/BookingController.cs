@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,9 +21,31 @@ namespace AutoFix_Pro.Controllers
         }
 
         // ==========================================
-        // ADMIN SIDE: View All Appointments
+        // ADMIN PANEL: Professional Dashboard
+        // Visible to BOTH Admin and SuperAdmin
         // ==========================================
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        public async Task<IActionResult> Dashboard()
+        {
+            var appointments = await _context.Appointments.ToListAsync();
 
+            var viewModel = new AdminDashboardViewModel
+            {
+                TotalAppointments = appointments.Count,
+                PendingTasks = appointments.Count(a => a.Status == "Pending" || a.BookingDate > DateTime.Now),
+                TotalRevenue = appointments.Count(a => a.Status == "Completed") * 2500,
+
+                ChartLabels = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" },
+                ChartData = new List<int> { 4, 7, 10, 5, 12, 8, 3 }
+            };
+
+            return View(viewModel);
+        }
+
+        // ==========================================
+        // ADMIN SIDE: View All Appointments (Table View)
+        // RESTRICTED: Only SuperAdmin can see this list
+        // ==========================================
         [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Index()
         {
@@ -30,7 +53,6 @@ namespace AutoFix_Pro.Controllers
                 .OrderByDescending(a => a.BookingDate)
                 .ToListAsync();
 
-            // --- CALCULATE DASHBOARD STATS ---
             ViewBag.TotalCount = appointments.Count;
             ViewBag.PendingCount = appointments.Count(a => a.Status == "Pending");
             ViewBag.CompletedCount = appointments.Count(a => a.Status == "Completed");
@@ -41,17 +63,14 @@ namespace AutoFix_Pro.Controllers
         // ==========================================
         // CUSTOMER SIDE: Create Booking
         // ==========================================
-
         public IActionResult Create(string serviceType)
         {
-            // Create the model and pre-fill the ServiceType and Date
             var model = new Appointment
             {
                 ServiceType = serviceType,
-                BookingDate = DateTime.Now.AddDays(1) // Default to tomorrow
+                BookingDate = DateTime.Now.AddDays(1)
             };
 
-            // Also provide the full list for the dropdown
             ViewBag.ServiceList = new SelectList(_context.ServiceTicket, "ServiceName", "ServiceName", serviceType);
 
             return View(model);
@@ -63,6 +82,7 @@ namespace AutoFix_Pro.Controllers
         {
             if (ModelState.IsValid)
             {
+                appointment.Status = "Pending";
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Success));
@@ -75,6 +95,11 @@ namespace AutoFix_Pro.Controllers
             return View();
         }
 
+        // ==========================================
+        // ADMIN ACTIONS: Update Status
+        // RESTRICTED: Only SuperAdmin can complete a booking
+        // ==========================================
+        [Authorize(Roles = "SuperAdmin")]
         [HttpGet]
         public async Task<IActionResult> CompleteBooking(int id)
         {

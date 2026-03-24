@@ -1,0 +1,90 @@
+﻿@model AutoFix_Pro.Models.AdminDashboardViewModel
+
+<div class="container-fluid py-4 bg-black min-vh-100 text-white">
+    <div class="px-3">
+        <h2 class="fw-bold"><i class="bi bi-speedometer2 text-primary me-2"></i>ADMIN <span class="text-primary">COMMAND CENTER</span></h2>
+        <p class="text-muted small">Welcome back, @User.Identity?.Name</p>
+    </div>
+
+    <div class="row g-3 mb-4 mt-2">
+        <div class="col-md-4">
+            <div class="card bg-dark border-primary p-4 shadow-sm" style="border-left: 5px solid #0d6efd !important;">
+                <small class="text-white-50 text-uppercase">Total Revenue</small>
+                <h2 class="fw-bold text-success">₱@Model.TotalRevenue.ToString("N0")</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary p-4 shadow-sm">
+                <small class="text-white-50 text-uppercase">Bookings</small>
+                <h2 class="fw-bold text-primary">@Model.TotalAppointments</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-secondary p-4 shadow-sm">
+                <small class="text-white-50 text-uppercase">Pending Approvals</small>
+                <h2 class="fw-bold text-warning">@Model.PendingTasks</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card bg-dark border-secondary p-4">
+                <h5 class="mb-4 text-primary">Weekly Performance Trend</h5>
+                <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary p-4 h-100">
+                <h5 class="mb-4 text-primary">Quick Navigation</h5>
+                <div class="d-grid gap-3">
+                    @* Only SuperAdmin can see the link to manage all bookings *@
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-primary text-start p-3">
+                            <i class="bi bi-table me-2"></i> Manage All Bookings
+                        </a>
+                    }
+                    
+                    @* Both Admin and SuperAdmin can see Service Inventory *@
+                    <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-info text-start p-3">
+                        <i class="bi bi-tools me-2"></i> Service Inventory
+                    </a>
+                    
+                    @* Optional: Profile management link for both *@
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn btn-outline-secondary text-start p-3">
+                        <i class="bi bi-person-gear me-2"></i> Account Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx, {
+        type: 'line',
+        data: {
+        labels: @Html.Raw(Json.Serialize(Model.ChartLabels)),
+        datasets: [{
+        label: 'Bookings',
+        data: @Html.Raw(Json.Serialize(Model.ChartData)),
+        borderColor: '#0d6efd',
+        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+        fill: true,
+        tension: 0.4
+        }]
+        },
+        options: {
+        plugins: { legend: { display: false } },
+        scales: {
+        y: { ticks: { color: '#888' }, grid: { color: '#333' } },
+        x: { ticks: { color: '#888' }, grid: { display: false } }
+        }
+        }
+        });
+    </script>
+}

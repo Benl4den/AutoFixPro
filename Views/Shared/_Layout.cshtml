@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html><html lang="en"><head>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AutoFix Pro</title>
@@ -60,7 +62,9 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-    </style></head><body>
+    </style>
+</head>
+<body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark py-3 main-nav mb-0">
             <div class="container-fluid px-lg-5">
@@ -81,18 +85,28 @@
                             </a>
                         </li>
 
-                        @* SECURE AREA: Only visible if logged in and in SuperAdmin Role *@
+                        @* SUPER ADMIN ONLY AREA: Staff & Manage Bookings List *@
                         @if (User.Identity.IsAuthenticated && User.IsInRole("SuperAdmin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link custom-link text-white" asp-controller="UserManagement" asp-action="Index">
-                                    <i class="bi bi-shield-lock me-1 text-primary"></i> STAFF LIST
+                                    <i class="bi bi-person-badge me-1 text-primary"></i> STAFF LIST
                                 </a>
                             </li>
-
+                            
                             <li class="nav-item">
-                                <a class="nav-link custom-link text-warning fw-bold" asp-controller="Booking" asp-action="Index">
-                                    <i class="bi bi-calendar-check me-1"></i> ADMIN PANEL
+                                <a class="nav-link custom-link text-white" asp-controller="Booking" asp-action="Index">
+                                    <i class="bi bi-calendar-check me-1 text-primary"></i> MANAGE BOOKINGS
+                                </a>
+                            </li>
+                        }
+
+                        @* ADMIN DASHBOARD: Visible to both Admin and SuperAdmin *@
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link custom-link text-warning fw-bold" asp-controller="Booking" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-1"></i> ADMIN PANEL
                                 </a>
                             </li>
                         }
@@ -197,9 +211,11 @@
                 <p class="text-muted small mb-0">&copy; 2026 AutoFix Pro - CCS Thesis Project</p>
             </div>
         </div>
-    </footer>
+    </footer>   
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)</body></html>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
