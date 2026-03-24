@@ -5,54 +5,138 @@
 }
 
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-white fw-bold">Manage Appointments</h1>
-        <span class="badge bg-primary px-3 py-2">Total: @Model.Count()</span>
-    </div>
-
-    <div class="card bg-dark border-secondary shadow-lg">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-dark table-hover mb-0">
-                    <thead class="table-primary text-dark">
-                        <tr>
-                            <th>Customer Name</th>
-                            <th>Service</th>
-                            <th>Plate Number</th>
-                            <th>Date & Time</th>
-                            <th>Status</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="align-middle">@item.CustomerName</td>
-                                <td class="align-middle">@item.ServiceType</td>
-                                <td class="align-middle"><code class="text-info fw-bold">@item.VehiclePlate</code></td>
-                                <td class="align-middle text-muted">@item.BookingDate.ToString("MMM dd, yyyy hh:mm tt")</td>
-                                <td class="align-middle">
-                                    <span class="badge @(item.Status == "Pending" ? "bg-warning" : "bg-success") text-dark">
-                                        @item.Status
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-outline-info me-1">Details</button>
-                                    <button class="btn btn-sm btn-outline-success">Complete</button>
-                                </td>
-                            </tr>
-                        }
-
-                        @if (!Model.Any())
-                        {
-                            <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">No appointments found in the database.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div>
+            <h1 class="display-6 fw-bold text-white mb-0">
+                <i class="bi bi-speedometer2 text-primary me-2"></i>Manage <span class="text-primary">Appointments</span>
+            </h1>
+            <p class="text-muted mb-0">Real-time status tracking for AutoFix Pro</p>
+        </div>
+        
+        <div class="d-flex gap-3">
+            <div class="text-end">
+                <div class="small text-muted text-uppercase fw-bold mb-1" style="letter-spacing: 1px;">Request Status</div>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-dark border border-secondary px-3 py-2 shadow-sm">Total: @ViewBag.TotalCount</span>
+                    <span class="badge bg-warning text-dark px-3 py-2 shadow-sm">Pending: @ViewBag.PendingCount</span>
+                    <span class="badge bg-success px-3 py-2 shadow-sm">Finished: @ViewBag.CompletedCount</span>
+                </div>
             </div>
         </div>
     </div>
+
+    <div class="card bg-dark border-secondary shadow-lg rounded-4 overflow-hidden" style="border: 1px solid rgba(255,255,255,0.1) !important;">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead class="bg-black text-uppercase small" style="letter-spacing: 1px;">
+                    <tr>
+                        <th class="py-4 ps-4">Customer Details</th>
+                        <th class="py-4">Service Type</th>
+                        <th class="py-4 text-center">Vehicle Plate</th>
+                        <th class="py-4">Schedule</th>
+                        <th class="py-4">Status</th>
+                        <th class="py-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-info-circle me-2"></i> No appointments found in the database.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td class="ps-4 py-4">
+                                    <div class="fw-bold text-white fs-6">@item.CustomerName</div>
+                                    <span class="text-muted x-small">Client Account</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 p-2 rounded-2 me-2">
+                                            <i class="bi bi-wrench-adjustable text-primary small"></i>
+                                        </div>
+                                        <span class="text-info fw-bold small">@item.ServiceType</span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="plate-badge">@item.VehiclePlate</span>
+                                </td>
+                                <td>
+                                    <div class="text-white small">@item.BookingDate.ToString("MMM dd, yyyy")</div>
+                                    <div class="text-muted x-small">@item.BookingDate.ToString("hh:mm tt")</div>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill @(item.Status == "Pending" ? "bg-warning text-dark" : "bg-success") px-3 py-2 shadow-sm">
+                                        <i class="bi @(item.Status == "Pending" ? "bi-clock" : "bi-check-circle") me-1"></i> @item.Status
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @if (item.Status != "Completed")
+                                        {
+                                            <a asp-controller="Booking"
+                                                   asp-action="CompleteBooking"
+                                                   asp-route-id="@item.Id"
+                                                   class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
+                                                   onclick="return confirm('Mark this appointment as completed?');">
+                                                <i class="bi bi-check-lg"></i> Complete
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-outline-secondary disabled rounded-pill px-3">
+                                                <i class="bi bi-check2-all"></i> Done
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Premium Styling Overrides */
+    .plate-badge {
+        background-color: #f8f9fa;
+        color: #1a1a1a;
+        border: 2px solid #333;
+        border-radius: 4px;
+        padding: 2px 10px;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: 800;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+        display: inline-block;
+        text-transform: uppercase;
+    }
+
+    .x-small {
+        font-size: 0.7rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.03) !important;
+        transition: all 0.3s ease;
+    }
+
+    .bg-black {
+        background-color: #000 !important;
+    }
+</style>

@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using AutoFix_Pro.Data;
+﻿using AutoFix_Pro.Data;
 using AutoFix_Pro.Models;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AutoFix_Pro.Controllers
 {
@@ -22,14 +23,17 @@ namespace AutoFix_Pro.Controllers
         // ADMIN SIDE: View All Appointments
         // ==========================================
 
-        // Only users logged in as "SuperAdmin" can see this page
         [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Index()
         {
-            // Fetches all appointments from the database, newest first
             var appointments = await _context.Appointments
                 .OrderByDescending(a => a.BookingDate)
                 .ToListAsync();
+
+            // --- CALCULATE DASHBOARD STATS ---
+            ViewBag.TotalCount = appointments.Count;
+            ViewBag.PendingCount = appointments.Count(a => a.Status == "Pending");
+            ViewBag.CompletedCount = appointments.Count(a => a.Status == "Completed");
 
             return View(appointments);
         }
@@ -38,27 +42,27 @@ namespace AutoFix_Pro.Controllers
         // CUSTOMER SIDE: Create Booking
         // ==========================================
 
-        // GET: Booking/Create
-        // Catches the 'serviceType' from the "Book This Service" button
         public IActionResult Create(string serviceType)
         {
+            // Create the model and pre-fill the ServiceType and Date
             var model = new Appointment
             {
                 ServiceType = serviceType,
-                BookingDate = DateTime.Now.AddDays(1) // Defaults the date to tomorrow
+                BookingDate = DateTime.Now.AddDays(1) // Default to tomorrow
             };
+
+            // Also provide the full list for the dropdown
+            ViewBag.ServiceList = new SelectList(_context.ServiceTicket, "ServiceName", "ServiceName", serviceType);
 
             return View(model);
         }
 
-        // POST: Booking/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CustomerName,BookingDate,ServiceType,VehiclePlate")] Appointment appointment)
         {
             if (ModelState.IsValid)
             {
-                // Status defaults to "Pending" as defined in your Appointment model
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Success));
@@ -66,10 +70,27 @@ namespace AutoFix_Pro.Controllers
             return View(appointment);
         }
 
-        // GET: Booking/Success
         public IActionResult Success()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CompleteBooking(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            appointment.Status = "Completed";
+
+            _context.Update(appointment);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

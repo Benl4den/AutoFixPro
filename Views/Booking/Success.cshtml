@@ -1,24 +1,35 @@
-﻿@{
+﻿@model AutoFix_Pro.Models.Appointment
+
+@{
     ViewData["Title"] = "Success - AutoFix Pro";
 }
 
 <div class="container py-5 text-center">
     @* Using the dark-blue border and obsidian background for consistency *@
     <div class="py-5 bg-dark border-dark-blue rounded-4 shadow-lg text-white mx-auto" style="max-width: 600px;">
+        
         <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
 
-        <h1 class="display-5 fw-bold mt-3">Booking Confirmed!</h1>
+        <h1 class="display-5 fw-bold mt-3 text-uppercase" style="letter-spacing: 1px;">Booking Confirmed!</h1>
+        
         <p class="fs-5 text-white-50 mb-4 px-4">
-            Your appointment has been successfully recorded. We'll see you at the shop!
+            We've successfully added your <span class="text-primary fw-bold">@Model?.ServiceType</span> request to our schedule. We'll see you at the shop!
         </p>
 
         <div class="d-flex justify-content-center gap-3">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 shadow">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary px-4 py-2 shadow fw-bold rounded-pill">
                 <i class="bi bi-house-door me-2"></i>Back to Home
             </a>
-            <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-light px-4">
+            <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-light px-4 py-2 rounded-pill">
                 View Services
             </a>
+        </div>
+
+        @* Small Trust Signal Footer *@
+        <div class="mt-5 pt-3 border-top border-secondary mx-5">
+            <p class="x-small text-muted mb-0">
+                <i class="bi bi-shield-check me-1 text-success"></i> AutoFix Pro Secure Booking System
+            </p>
         </div>
     </div>
 </div>
@@ -27,5 +38,21 @@
     /* Custom Dark Blue border to match your brand style */
     .border-dark-blue {
         border: 2px solid #004085 !important;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    /* Animation for the checkmark */
+    .bi-check-circle-fill {
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
     }
 </style>

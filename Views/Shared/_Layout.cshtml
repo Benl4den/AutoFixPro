@@ -1,6 +1,4 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
+﻿<!DOCTYPE html><html lang="en"><head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AutoFix Pro</title>
@@ -19,7 +17,6 @@
             border-bottom: 1px solid #333 !important;
         }
 
-        /* Styling for the custom nav links */
         .custom-link {
             font-weight: 600;
             font-size: 0.85rem;
@@ -27,9 +24,9 @@
             transition: color 0.3s ease;
         }
 
-            .custom-link:hover {
-                color: #007bff !important;
-            }
+        .custom-link:hover {
+            color: #007bff !important;
+        }
 
         .form-control, .form-floating input, input {
             background-color: #1a1a1a !important;
@@ -37,10 +34,10 @@
             border: 1px solid #444 !important;
         }
 
-            input:disabled, input[readonly] {
-                background-color: #252525 !important;
-                opacity: 0.8;
-            }
+        input:disabled, input[readonly] {
+            background-color: #252525 !important;
+            opacity: 0.8;
+        }
 
         .nav-pills .nav-link.active {
             background-color: #007bff !important;
@@ -52,9 +49,18 @@
             padding: 20px 0;
             margin-top: 40px;
         }
-    </style>
-</head>
-<body>
+
+        /* Animation for the gear */
+        .spinning-gear {
+            display: inline-block;
+            animation: gear-rotate 4s linear infinite;
+        }
+
+        @@keyframes gear-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style></head><body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark py-3 main-nav mb-0">
             <div class="container-fluid px-lg-5">
@@ -68,35 +74,33 @@
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        @if (User.Identity.IsAuthenticated)
+                        @* Public Link *@
+                        <li class="nav-item">
+                            <a class="nav-link custom-link text-white" asp-controller="ServiceTickets" asp-action="Index">
+                                <i class="bi bi-tools me-1 text-primary"></i> SERVICES
+                            </a>
+                        </li>
+
+                        @* SECURE AREA: Only visible if logged in and in SuperAdmin Role *@
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("SuperAdmin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link custom-link text-white" asp-controller="ServiceTickets" asp-action="Index">
-                                    <i class="bi bi-tools me-1 text-primary"></i> MANAGE SERVICES
+                                <a class="nav-link custom-link text-white" asp-controller="UserManagement" asp-action="Index">
+                                    <i class="bi bi-shield-lock me-1 text-primary"></i> STAFF LIST
                                 </a>
                             </li>
 
-                            @if (User.IsInRole("SuperAdmin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link custom-link text-white" asp-controller="UserManagement" asp-action="Index">
-                                        <i class="bi bi-shield-lock me-1 text-primary"></i> STAFF LIST
-                                    </a>
-                                </li>
-
-                                @* ADDED: Admin Panel Link for Appointments *@
-                                <li class="nav-item">
-                                    <a class="nav-link custom-link text-warning fw-bold" asp-controller="Booking" asp-action="Index">
-                                        <i class="bi bi-calendar-check me-1"></i> ADMIN PANEL
-                                    </a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link custom-link text-warning fw-bold" asp-controller="Booking" asp-action="Index">
+                                    <i class="bi bi-calendar-check me-1"></i> ADMIN PANEL
+                                </a>
+                            </li>
                         }
                     </ul>
 
                     <div class="d-flex align-items-center gap-2">
                         <ul class="navbar-nav align-items-center">
-                            @if (User.IsInRole("SuperAdmin"))
+                            @if (User.Identity.IsAuthenticated && User.IsInRole("SuperAdmin"))
                             {
                                 <li class="nav-item me-2">
                                     <a class="btn btn-sm btn-outline-primary fw-bold px-3" asp-area="Identity" asp-page="/Account/Register">
@@ -118,12 +122,14 @@
         </main>
     </div>
 
+    @* Helper variables for cleaner logic *@
     @{
         var isIdentityArea = ViewContext.RouteData.Values["area"]?.ToString() == "Identity";
         var isUserLoggedIn = User.Identity.IsAuthenticated;
     }
 
-    @if (!isIdentityArea && !isUserLoggedIn)
+    @* Show Landing Page Content ONLY to Guests *@
+    @if (!isUserLoggedIn && !isIdentityArea)
     {
         <section class="why-choose-section py-5">
             <div class="container text-center">
@@ -132,39 +138,17 @@
 
                 <div class="row g-4">
                     <div class="col-md-6">
-                        <div class="feature-card p-4 rounded-4 text-start h-100">
-                            <div class="feature-icon-bg mb-3">
-                                <i class="bi bi-shield-check text-primary"></i>
-                            </div>
+                        <div class="feature-card p-4 rounded-4 text-start h-100 border border-secondary bg-dark">
+                            <i class="bi bi-shield-check text-primary fs-3 mb-3 d-block"></i>
                             <h5 class="fw-bold text-white">Certified Technicians</h5>
                             <p class="text-muted small mb-0">ASE-certified mechanics with years of experience</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="feature-card p-4 rounded-4 text-start h-100">
-                            <div class="feature-icon-bg mb-3">
-                                <i class="bi bi-clock text-primary"></i>
-                            </div>
+                        <div class="feature-card p-4 rounded-4 text-start h-100 border border-secondary bg-dark">
+                            <i class="bi bi-clock text-primary fs-3 mb-3 d-block"></i>
                             <h5 class="fw-bold text-white">Fast Turnaround</h5>
                             <p class="text-muted small mb-0">Most services completed within 24 hours</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="feature-card p-4 rounded-4 text-start h-100">
-                            <div class="feature-icon-bg mb-3">
-                                <i class="bi bi-star text-primary"></i>
-                            </div>
-                            <h5 class="fw-bold text-white">Quality Guarantee</h5>
-                            <p class="text-muted small mb-0">90-day warranty on all parts and labor</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="feature-card p-4 rounded-4 text-start h-100">
-                            <div class="feature-icon-bg mb-3">
-                                <i class="bi bi-check-circle text-primary"></i>
-                            </div>
-                            <h5 class="fw-bold text-white">Honest Pricing</h5>
-                            <p class="text-muted small mb-0">Transparent quotes with no hidden fees</p>
                         </div>
                     </div>
                 </div>
@@ -173,14 +157,13 @@
 
         <section class="cta-banner-container my-5">
             <div class="container">
-                <div class="cta-banner-content text-center p-5 rounded-4 shadow-lg">
-                    <h2 class="fw-bold text-white mb-3">Ready to Get Your Car Serviced?</h2>
-                    <p class="text-white-50 mb-4">Book an appointment today and experience professional automotive care</p>
+                <div class="bg-primary bg-gradient text-center p-5 rounded-4 shadow-lg text-white">
+                    <h2 class="fw-bold mb-3">Ready to Get Your Car Serviced?</h2>
+                    <p class="mb-4 opacity-75">Book an appointment today and experience professional automotive care</p>
 
                     <div class="d-flex justify-content-center gap-3">
-                        <a href="tel:(02)1234-5678" class="footer-btn-blue text-decoration-none">
-                            <i class="bi bi-telephone-fill me-2"></i>
-                            <span>Call Us Now</span>
+                        <a href="tel:(02)1234-5678" class="btn btn-light px-4 py-2 fw-bold text-primary">
+                            <i class="bi bi-telephone-fill me-2"></i> Call Us Now
                         </a>
                         <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-light px-4 py-2">
                             Book Online
@@ -192,52 +175,26 @@
     }
 
     <footer class="footer bg-dark text-white pt-5 pb-3">
-        <div class="container">
-            <div class="row text-start">
+        <div class="container text-start">
+            <div class="row">
                 <div class="col-md-4 mb-4">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-wrench-adjustable text-primary fs-4"></i>
-                        <h5 class="fw-bold m-0 text-white">AutoFix <span class="text-primary">Pro</span></h5>
-                    </div>
+                    <h5 class="fw-bold mb-3">AutoFix <span class="text-primary">Pro</span></h5>
                     <p class="text-muted small">Professional automotive care at your fingertips. Trusted by thousands of car owners.</p>
                 </div>
 
                 <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-4 text-white">Quick Links</h5>
-                    <ul class="list-unstyled footer-links">
-                        <li>
-                            <a asp-controller="ServiceTickets" asp-action="Index" class="text-muted text-decoration-none">
-                                Services
-                            </a>
-                        </li>
-                        <li><a href="/About" class="text-muted text-decoration-none">About Us</a></li>
-                        <li><a href="/Contact" class="text-muted text-decoration-none">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-4 text-white">Contact Info</h5>
-                    <ul class="list-unstyled mb-4">
+                    <h5 class="fw-bold mb-3">Contact Info</h5>
+                    <ul class="list-unstyled text-muted small">
                         <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i> 123 Mechanic St, Metro Manila</li>
                         <li class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> (02) 1234-5678</li>
                         <li class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i> info@autofixpro.com</li>
                     </ul>
-
-                    <div class="footer-cta-row d-flex gap-3">
-                        <a href="tel:(02)1234-5678" class="footer-btn-blue text-decoration-none">
-                            <i class="bi bi-telephone"></i>
-                            <span>Call Us Now</span>
-                        </a>
-                        <a href="/Book" class="footer-btn-glass-outline text-decoration-none">
-                            <span>Book Online</span>
-                        </a>
-                    </div>
                 </div>
             </div>
 
             <hr class="border-secondary mt-4">
             <div class="text-center">
-                <p class="text-muted small mb-0">&copy; 2026 AutoFix Pro - Privacy Policy</p>
+                <p class="text-muted small mb-0">&copy; 2026 AutoFix Pro - CCS Thesis Project</p>
             </div>
         </div>
     </footer>
@@ -245,6 +202,4 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
+    @await RenderSectionAsync("Scripts", required: false)</body></html>

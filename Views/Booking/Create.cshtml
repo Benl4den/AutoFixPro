@@ -7,48 +7,58 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
-            @* Using the Dark Blue border we established for the Home Page *@
-            <div class="card bg-dark border-dark-blue shadow-lg text-white">
-                <div class="card-header bg-dark-blue py-3 border-0">
-                    <h3 class="mb-0 fw-bold"><i class="bi bi-calendar-check me-2"></i>Schedule Service</h3>
+            <div class="card bg-dark border-dark-blue shadow-lg text-white rounded-4 overflow-hidden">
+                <div class="card-header bg-dark-blue py-4 border-0 text-center">
+                    <h3 class="mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">
+                        <i class="bi bi-calendar-check me-2"></i>Schedule Service
+                    </h3>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body p-4 p-md-5">
                     <form asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="CustomerName" class="form-label fw-bold text-white-50"></label>
-                            <input asp-for="CustomerName" class="form-control bg-dark border-dark-blue text-white" placeholder="Enter your full name" />
-                            <span asp-validation-for="CustomerName" class="text-danger"></span>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="BookingDate" class="form-label fw-bold text-white-50"></label>
-                                <input asp-for="BookingDate" type="datetime-local" class="form-control bg-dark border-dark-blue text-white" />
-                                <span asp-validation-for="BookingDate" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="VehiclePlate" class="form-label fw-bold text-white-50"></label>
-                                <input asp-for="VehiclePlate" class="form-control bg-dark border-dark-blue text-white" placeholder="e.g., ABC-1234" />
-                                <span asp-validation-for="VehiclePlate" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label asp-for="ServiceType" class="form-label fw-bold text-white-50"></label>
-                            <select asp-for="ServiceType" class="form-select bg-dark border-dark-blue text-white">
-                                <option value="" disabled selected>Choose a service...</option>
-                                <option value="Maintenance">Maintenance</option>
-                                <option value="Repair">Repair</option>
-                                <option value="Diagnostics">Diagnostics</option>
-                                <option value="Detailing">Detailing</option>
+                        <div class="form-floating mb-4">
+                            <select asp-for="ServiceType" 
+                                    class="form-select bg-black border-dark-blue text-white shadow-sm" 
+                                    asp-items="ViewBag.ServiceList"
+                                    style="height: 60px;">
+                                <option value="">-- Select Service --</option>
                             </select>
-                            <span asp-validation-for="ServiceType" class="text-danger"></span>
+                            <label class="text-white-50 small">Requested Service Type</label>
+                            <span asp-validation-for="ServiceType" class="text-danger small"></span>
                         </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg shadow fw-bold">Confirm Appointment</button>
+                        <div class="form-floating mb-4">
+                            <input asp-for="CustomerName" class="form-control bg-black border-dark-blue text-white" placeholder="Full Name" style="height: 60px;" />
+                            <label class="text-white-50 small">Full Name</label>
+                            <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-floating">
+                                    <input asp-for="BookingDate" type="datetime-local" class="form-control bg-black border-dark-blue text-white" style="height: 60px;" />
+                                    <label class="text-white-50 small">Date & Time</label>
+                                    <span asp-validation-for="BookingDate" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-floating">
+                                    <input asp-for="VehiclePlate" class="form-control bg-black border-dark-blue text-white" placeholder="Plate Number" style="height: 60px;" />
+                                    <label class="text-white-50 small">Plate Number</label>
+                                    <span asp-validation-for="VehiclePlate" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-2">
+                            <button type="submit" class="btn btn-primary btn-lg py-3 shadow fw-bold rounded-pill text-uppercase border-0" 
+                                    style="background: linear-gradient(135deg, #0d6efd 0%, #0046b3 100%);">
+                                Confirm Appointment
+                            </button>
+                            <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-link text-muted mt-3 text-decoration-none small">
+                                <i class="bi bi-arrow-left me-1"></i> Cancel and go back
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -58,22 +68,30 @@
 </div>
 
 <style>
-    .border-dark-blue {
-        border: 2px solid #004085 !important;
+    .bg-black { background-color: #000 !important; }
+    .border-dark-blue { border: 2px solid #004085 !important; }
+    .bg-dark-blue { background-color: #004085 !important; }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #000 !important;
+        color: white;
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
 
-    .bg-dark-blue {
-        background-color: #004085 !important;
+    /* Floating label fix for black background */
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select ~ label {
+        color: #0d6efd !important;
+        opacity: 0.8;
     }
 
-    /* Ensure the date picker icon is visible in dark mode */
     input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
 </style>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

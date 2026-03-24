@@ -1,0 +1,77 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile Settings";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+    Layout = "_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <h2 class="text-white fw-bold"><i class="bi bi-person-gear me-2 text-primary"></i> Account Settings</h2>
+        <p class="text-muted">Update your personal information and contact details.</p>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-lg rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="row g-0">
+                <div class="col-md-3 bg-dark p-4 border-end border-secondary">
+                    <partial name="_ManageNav" />
+                </div>
+
+                <div class="col-md-9 p-5 bg-black bg-opacity-25">
+                    <partial name="_StatusMessage" for="StatusMessage" />
+                    
+                    <div class="row">
+                        <div class="col-xl-8">
+                            <form id="profile-form" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Username" class="form-label text-muted small text-uppercase fw-bold">Username / Login ID</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-secondary border-secondary text-white">
+                                            <i class="bi bi-at"></i>
+                                        </span>
+                                        <input asp-for="Username" class="form-control bg-dark border-secondary text-white opacity-75" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="Input.PhoneNumber" class="form-label text-muted small text-uppercase fw-bold">Contact Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-secondary border-secondary text-white">
+                                            <i class="bi bi-telephone"></i>
+                                        </span>
+                                        <input asp-for="Input.PhoneNumber" class="form-control bg-dark border-secondary text-white" placeholder="Enter phone number" />
+                                    </div>
+                                    <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <hr class="border-secondary my-4">
+
+                                <button id="update-profile-button" type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow">
+                                    <i class="bi bi-check2-circle me-2"></i> Save Profile
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .form-control:disabled { background-color: #121212 !important; }
+    .form-control:focus {
+        background-color: #1a1a1a !important;
+        border-color: #0d6efd;
+        color: white;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+</style>

@@ -1,0 +1,17 @@
+﻿@{
+    // This tells the manage pages to use your main site's professional navbar
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    @* We remove the extra <h1>Manage your account</h1> here *@
+    @* We also remove the extra sidebar so it doesn't double up *@
+    
+    <main role="main">
+        @RenderBody()
+    </main>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}
