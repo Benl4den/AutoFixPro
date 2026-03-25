@@ -22,19 +22,30 @@ namespace AutoFix_Pro.Controllers
 
         // ==========================================
         // ADMIN PANEL: Professional Dashboard
-        // Visible to BOTH Admin and SuperAdmin
         // ==========================================
         [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<IActionResult> Dashboard()
         {
             var appointments = await _context.Appointments.ToListAsync();
+            var services = await _context.ServiceTicket.ToListAsync();
+
+            // AGGRESSIVE MATCHING: If the service name is FOUND within the appointment's service type
+            decimal accurateRevenue = appointments
+                .Where(a => !string.IsNullOrEmpty(a.Status) && a.Status.Trim().Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                .Sum(a => {
+                    // This looks for any service that matches the booking
+                    var matchedService = services.FirstOrDefault(s =>
+                        a.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
+                        s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase));
+
+                    return matchedService?.Price ?? 0;
+                });
 
             var viewModel = new AdminDashboardViewModel
             {
                 TotalAppointments = appointments.Count,
-                PendingTasks = appointments.Count(a => a.Status == "Pending" || a.BookingDate > DateTime.Now),
-                TotalRevenue = appointments.Count(a => a.Status == "Completed") * 2500,
-
+                PendingTasks = appointments.Count(a => a.Status == "Pending"),
+                TotalRevenue = accurateRevenue,
                 ChartLabels = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" },
                 ChartData = new List<int> { 4, 7, 10, 5, 12, 8, 3 }
             };
@@ -44,7 +55,6 @@ namespace AutoFix_Pro.Controllers
 
         // ==========================================
         // ADMIN SIDE: View All Appointments (Table View)
-        // RESTRICTED: Only SuperAdmin can see this list
         // ==========================================
         [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Index()
@@ -52,6 +62,10 @@ namespace AutoFix_Pro.Controllers
             var appointments = await _context.Appointments
                 .OrderByDescending(a => a.BookingDate)
                 .ToListAsync();
+
+            // Fetch services to allow the View to display prices for each appointment
+            var services = await _context.ServiceTicket.ToListAsync();
+            ViewBag.Services = services;
 
             ViewBag.TotalCount = appointments.Count;
             ViewBag.PendingCount = appointments.Count(a => a.Status == "Pending");
@@ -97,7 +111,6 @@ namespace AutoFix_Pro.Controllers
 
         // ==========================================
         // ADMIN ACTIONS: Update Status
-        // RESTRICTED: Only SuperAdmin can complete a booking
         // ==========================================
         [Authorize(Roles = "SuperAdmin")]
         [HttpGet]

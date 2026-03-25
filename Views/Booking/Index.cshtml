@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Admin Dashboard - Bookings";
+    // Retrieve the list of services from the ViewBag
+    var services = ViewBag.Services as List<AutoFix_Pro.Models.ServiceTicket> ?? new List<AutoFix_Pro.Models.ServiceTicket>();
 }
 
 <div class="container py-5">
@@ -12,7 +14,7 @@
             </h1>
             <p class="text-muted mb-0">Real-time status tracking for AutoFix Pro</p>
         </div>
-        
+
         <div class="d-flex gap-3">
             <div class="text-end">
                 <div class="small text-muted text-uppercase fw-bold mb-1" style="letter-spacing: 1px;">Request Status</div>
@@ -32,6 +34,7 @@
                     <tr>
                         <th class="py-4 ps-4">Customer Details</th>
                         <th class="py-4">Service Type</th>
+                        <th class="py-4">Service Price</th>
                         <th class="py-4 text-center">Vehicle Plate</th>
                         <th class="py-4">Schedule</th>
                         <th class="py-4">Status</th>
@@ -42,7 +45,7 @@
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="7" class="text-center py-5 text-muted">
                                 <i class="bi bi-info-circle me-2"></i> No appointments found in the database.
                             </td>
                         </tr>
@@ -51,6 +54,12 @@
                     {
                         @foreach (var item in Model)
                         {
+                            // Logic to match the service name and get the price
+                            var matchedService = services.FirstOrDefault(s =>
+                            item.ServiceType != null && (
+                            item.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
+                            s.ServiceName.Contains(item.ServiceType, StringComparison.OrdinalIgnoreCase)));
+
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                 <td class="ps-4 py-4">
                                     <div class="fw-bold text-white fs-6">@item.CustomerName</div>
@@ -63,6 +72,11 @@
                                         </div>
                                         <span class="text-info fw-bold small">@item.ServiceType</span>
                                     </div>
+                                </td>
+                                <td>
+                                    <span class="text-success fw-bold">
+                                        ₱@(matchedService?.Price.ToString("N0") ?? "0")
+                                    </span>
                                 </td>
                                 <td class="text-center">
                                     <span class="plate-badge">@item.VehiclePlate</span>
@@ -79,17 +93,17 @@
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a asp-action="Details" asp-route-id="@item.Id"
-                                               class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
+                                           class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         @if (item.Status != "Completed")
                                         {
                                             <a asp-controller="Booking"
-                                                   asp-action="CompleteBooking"
-                                                   asp-route-id="@item.Id"
-                                                   class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
-                                                   onclick="return confirm('Mark this appointment as completed?');">
+                                               asp-action="CompleteBooking"
+                                               asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
+                                               onclick="return confirm('Mark this appointment as completed?');">
                                                 <i class="bi bi-check-lg"></i> Complete
                                             </a>
                                         }

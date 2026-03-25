@@ -1,60 +1,154 @@
 ﻿@model AutoFix_Pro.Models.AdminDashboardViewModel
 
-<div class="container-fluid py-4 bg-black min-vh-100 text-white">
-    <div class="px-3">
-        <h2 class="fw-bold"><i class="bi bi-speedometer2 text-primary me-2"></i>ADMIN <span class="text-primary">COMMAND CENTER</span></h2>
-        <p class="text-muted small">Welcome back, @User.Identity?.Name</p>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --neon-blue: #00d2ff;
+        --neon-green: #39ff14;
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            border-color: rgba(0, 210, 255, 0.5);
+        }
+
+    .stat-value {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+    }
+
+    .nav-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+        .nav-btn:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+</style>
+
+<div class="container-fluid py-5 bg-black min-vh-100 text-white">
+    <div class="d-flex justify-content-between align-items-center mb-5 px-3">
+        <div>
+            <h1 class="fw-black text-uppercase mb-0" style="letter-spacing: 2px;">
+                <i class="bi bi-cpu text-info me-2"></i>Admin <span class="text-info">Command Center</span>
+            </h1>
+            <p class="text-muted small mt-1">
+                <span class="badge bg-info text-dark me-2">ONLINE</span> System Status: Nominal | Welcome, @User.Identity?.Name
+            </p>
+        </div>
+        <div class="text-end">
+            <p class="mb-0 text-muted small">Current Session</p>
+            <h5 class="fw-bold">@DateTime.Now.ToString("MMM dd, yyyy")</h5>
+        </div>
     </div>
 
-    <div class="row g-3 mb-4 mt-2">
+    <div class="row g-4 mb-5">
         <div class="col-md-4">
-            <div class="card bg-dark border-primary p-4 shadow-sm" style="border-left: 5px solid #0d6efd !important;">
-                <small class="text-white-50 text-uppercase">Total Revenue</small>
-                <h2 class="fw-bold text-success">₱@Model.TotalRevenue.ToString("N0")</h2>
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <small class="text-muted text-uppercase fw-bold">Total Revenue</small>
+                    <i class="bi bi-currency-dollar text-success fs-4"></i>
+                </div>
+                <h2 class="stat-value fw-bold text-success">₱@Model.TotalRevenue.ToString("N0")</h2>
+                <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
+                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-dark border-secondary p-4 shadow-sm">
-                <small class="text-white-50 text-uppercase">Bookings</small>
-                <h2 class="fw-bold text-primary">@Model.TotalAppointments</h2>
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <small class="text-muted text-uppercase fw-bold">Total Bookings</small>
+                    <i class="bi bi-calendar-check text-info fs-4"></i>
+                </div>
+                <h2 class="stat-value fw-bold text-info">@Model.TotalAppointments</h2>
+                <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
+                    <div class="progress-bar bg-info" style="width: 60%"></div>
+                </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-dark border-secondary p-4 shadow-sm">
-                <small class="text-white-50 text-uppercase">Pending Approvals</small>
-                <h2 class="fw-bold text-warning">@Model.PendingTasks</h2>
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <small class="text-muted text-uppercase fw-bold">Pending Tasks</small>
+                    <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                </div>
+                <h2 class="stat-value fw-bold text-warning">@Model.PendingTasks</h2>
+                <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
+                    <div class="progress-bar bg-warning" style="width: 40%"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-3">
+    <div class="row g-4">
         <div class="col-lg-8">
-            <div class="card bg-dark border-secondary p-4">
-                <h5 class="mb-4 text-primary">Weekly Performance Trend</h5>
-                <canvas id="performanceChart" style="max-height: 300px;"></canvas>
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="text-uppercase fw-bold mb-0">Analytics Trend</h5>
+                    <select class="form-select form-select-sm bg-transparent text-white border-secondary w-25">
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                    </select>
+                </div>
+                <canvas id="performanceChart" style="max-height: 350px;"></canvas>
             </div>
         </div>
+
         <div class="col-lg-4">
-            <div class="card bg-dark border-secondary p-4 h-100">
-                <h5 class="mb-4 text-primary">Quick Navigation</h5>
+            <div class="glass-card p-4 h-100">
+                <h5 class="text-uppercase fw-bold mb-4">Quick Operations</h5>
                 <div class="d-grid gap-3">
-                    @* Only SuperAdmin can see the link to manage all bookings *@
                     @if (User.IsInRole("SuperAdmin"))
                     {
-                        <a asp-action="Index" class="btn btn-outline-primary text-start p-3">
-                            <i class="bi bi-table me-2"></i> Manage All Bookings
+                        <a asp-action="Index" class="nav-btn btn btn-lg text-start p-3 d-flex align-items-center">
+                            <i class="bi bi-grid-3x3-gap me-3 fs-4"></i>
+                            <div>
+                                <div class="fw-bold">Manage Bookings</div>
+                                <div class="small opacity-50">Approve or complete orders</div>
+                            </div>
                         </a>
                     }
-                    
-                    @* Both Admin and SuperAdmin can see Service Inventory *@
-                    <a asp-controller="ServiceTickets" asp-action="Index" class="btn btn-outline-info text-start p-3">
-                        <i class="bi bi-tools me-2"></i> Service Inventory
+
+                    <a asp-controller="ServiceTickets" asp-action="Index" class="nav-btn btn btn-lg text-start p-3 d-flex align-items-center">
+                        <i class="bi bi-box-seam me-3 fs-4"></i>
+                        <div>
+                            <div class="fw-bold">Service Inventory</div>
+                            <div class="small opacity-50">Adjust pricing and parts</div>
+                        </div>
                     </a>
-                    
-                    @* Optional: Profile management link for both *@
-                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="btn btn-outline-secondary text-start p-3">
-                        <i class="bi bi-person-gear me-2"></i> Account Settings
+
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="nav-btn btn btn-lg text-start p-3 d-flex align-items-center">
+                        <i class="bi bi-shield-lock me-3 fs-4"></i>
+                        <div>
+                            <div class="fw-bold">Security & Settings</div>
+                            <div class="small opacity-50">Manage admin credentials</div>
+                        </div>
                     </a>
+                </div>
+
+                <div class="mt-5 p-3 rounded bg-primary bg-opacity-10 border border-primary border-opacity-25">
+                    <small class="text-primary d-block mb-1 fw-bold">SYSTEM TIP</small>
+                    <p class="small text-muted mb-0">Use the Service Inventory to keep pricing updated. This ensures revenue reflects accurate market rates.</p>
                 </div>
             </div>
         </div>
@@ -65,26 +159,45 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('performanceChart').getContext('2d');
+
+        // Custom Gradient for Chart
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(0, 210, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(0, 210, 255, 0)');
+
         new Chart(ctx, {
-        type: 'line',
-        data: {
-        labels: @Html.Raw(Json.Serialize(Model.ChartLabels)),
-        datasets: [{
-        label: 'Bookings',
-        data: @Html.Raw(Json.Serialize(Model.ChartData)),
-        borderColor: '#0d6efd',
-        backgroundColor: 'rgba(13, 110, 253, 0.1)',
-        fill: true,
-        tension: 0.4
-        }]
-        },
-        options: {
-        plugins: { legend: { display: false } },
-        scales: {
-        y: { ticks: { color: '#888' }, grid: { color: '#333' } },
-        x: { ticks: { color: '#888' }, grid: { display: false } }
-        }
-        }
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.ChartLabels)),
+                datasets: [{
+                    label: 'Service Volume',
+                    data: @Html.Raw(Json.Serialize(Model.ChartData)),
+                    borderColor: '#00d2ff',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#00d2ff',
+                    pointBorderColor: 'rgba(255,255,255,0.5)',
+                    pointHoverRadius: 6,
+                    fill: true,
+                    backgroundColor: gradient,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#666', font: { size: 10 } },
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    },
+                    x: {
+                        ticks: { color: '#666', font: { size: 10 } },
+                        grid: { display: false }
+                    }
+                }
+            }
         });
     </script>
 }
