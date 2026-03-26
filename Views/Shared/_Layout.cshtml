@@ -6,6 +6,9 @@
     <title>@ViewData["Title"] - AutoFix Pro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AutoFix_Pro.styles.css" asp-append-version="true" />
     <style>
@@ -17,6 +20,16 @@
         .navbar {
             background-color: #1a1a1a !important;
             border-bottom: 1px solid #333 !important;
+        }
+
+        /* 2. ADDED: Fix for the white textbox on Autofill */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
         }
 
         .custom-link {
@@ -36,6 +49,11 @@
             border: 1px solid #444 !important;
         }
 
+        /* Border color to match your specific brand blue */
+        .border-dark-blue {
+            border: 2px solid #004085 !important;
+        }
+
         input:disabled, input[readonly] {
             background-color: #252525 !important;
             opacity: 0.8;
@@ -52,7 +70,6 @@
             margin-top: 40px;
         }
 
-        /* Animation for the gear */
         .spinning-gear {
             display: inline-block;
             animation: gear-rotate 4s linear infinite;
@@ -62,6 +79,44 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        <style>
+    /* ... Your existing styles ... */
+
+    /* Custom classes for the Enhanced Confirmation Modal */
+    .border-dark-blue {
+        border: 2px solid #004085 !important;
+    }
+
+    .spinning-gear {
+        display: inline-block;
+        animation: gear-rotate 4s linear infinite;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+
+    @@keyframes gear-rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Icon animation that makes the checkmark grow into place */
+    .fs-huge {
+        font-size: 5rem;
+    }
+
+    .animated-icon {
+        display: inline-block;
+        animation: icon-pop-in 0.6s ease-out both;
+        text-shadow: 0 0 15px rgba(25, 135, 84, 0.5); /* Success Green Glow */
+    }
+
+    @@keyframes icon-pop-in {
+        0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+        70% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+</style>
     </style>
 </head>
 <body>
@@ -78,14 +133,12 @@
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-                        @* Public Link *@
                         <li class="nav-item">
                             <a class="nav-link custom-link text-white" asp-controller="ServiceTickets" asp-action="Index">
                                 <i class="bi bi-tools me-1 text-primary"></i> SERVICES
                             </a>
                         </li>
 
-                        @* SUPER ADMIN ONLY AREA: Staff & Manage Bookings List *@
                         @if (User.Identity.IsAuthenticated && User.IsInRole("SuperAdmin"))
                         {
                             <li class="nav-item">
@@ -101,7 +154,6 @@
                             </li>
                         }
 
-                        @* ADMIN DASHBOARD: Visible to both Admin and SuperAdmin *@
                         @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
                         {
                             <li class="nav-item">
@@ -136,13 +188,11 @@
         </main>
     </div>
 
-    @* Helper variables for cleaner logic *@
     @{
         var isIdentityArea = ViewContext.RouteData.Values["area"]?.ToString() == "Identity";
         var isUserLoggedIn = User.Identity.IsAuthenticated;
     }
 
-    @* Show Landing Page Content ONLY to Guests *@
     @if (!isUserLoggedIn && !isIdentityArea)
     {
         <section class="why-choose-section py-5">
@@ -188,33 +238,39 @@
         </section>
     }
 
-    <footer class="footer bg-dark text-white pt-5 pb-3">
-        <div class="container text-start">
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-3">AutoFix <span class="text-primary">Pro</span></h5>
-                    <p class="text-muted small">Professional automotive care at your fingertips. Trusted by thousands of car owners.</p>
+    @if (!(User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))))
+    {
+        <footer class="footer bg-dark text-white pt-5 pb-3">
+            <div class="container text-start">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <h5 class="fw-bold mb-3">AutoFix <span class="text-primary">Pro</span></h5>
+                        <p class="text-muted small">Professional automotive care at your fingertips. Trusted by thousands of car owners.</p>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <h5 class="fw-bold mb-3">Contact Info</h5>
+                        <ul class="list-unstyled text-muted small">
+                            <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i> 123 Mechanic St, Metro Manila</li>
+                            <li class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> (02) 1234-5678</li>
+                            <li class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i> info@autofixpro.com</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="col-md-4 mb-4">
-                    <h5 class="fw-bold mb-3">Contact Info</h5>
-                    <ul class="list-unstyled text-muted small">
-                        <li class="mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i> 123 Mechanic St, Metro Manila</li>
-                        <li class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> (02) 1234-5678</li>
-                        <li class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i> info@autofixpro.com</li>
-                    </ul>
+                <hr class="border-secondary mt-4">
+                <div class="text-center">
+                    <p class="text-muted small mb-0">&copy; 2026 AutoFix Pro - CCS Thesis Project</p>
                 </div>
             </div>
-
-            <hr class="border-secondary mt-4">
-            <div class="text-center">
-                <p class="text-muted small mb-0">&copy; 2026 AutoFix Pro - CCS Thesis Project</p>
-            </div>
-        </div>
-    </footer>   
+        </footer>   
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

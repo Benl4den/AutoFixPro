@@ -18,13 +18,16 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
                         <div class="form-floating mb-4">
-                            <select asp-for="ServiceType" 
-                                    class="form-select bg-black border-dark-blue text-white shadow-sm" 
+                            <select class="form-select bg-black border-dark-blue text-white shadow-sm" 
                                     asp-items="ViewBag.ServiceList"
-                                    style="height: 60px;">
-                                <option value="">-- Select Service --</option>
+                                    style="height: 60px; opacity: 0.7; pointer-events: none;" 
+                                    disabled>
+                                <option value="">@Model.ServiceType</option>
                             </select>
-                            <label class="text-white-50 small">Requested Service Type</label>
+    
+                            <input type="hidden" asp-for="ServiceType" />
+    
+                            <label class="text-white-50 small">Requested Service Type (Locked)</label>
                             <span asp-validation-for="ServiceType" class="text-danger small"></span>
                         </div>
 
@@ -36,16 +39,21 @@
 
                         <div class="row g-3">
                             <div class="col-md-6 mb-4">
-                                <div class="form-floating">
-                                    <input asp-for="BookingDate" type="datetime-local" class="form-control bg-black border-dark-blue text-white" style="height: 60px;" />
-                                    <label class="text-white-50 small">Date & Time</label>
+                                <div class="form-floating date-input-container">
+                                    @* Enhanced with a specific ID for the JS min-date logic *@
+                                    <input asp-for="BookingDate" type="datetime-local" id="bookingDateTime" 
+                                           class="form-control bg-black border-dark-blue text-white custom-datetime-input" 
+                                           style="height: 60px;" />
+                                    <label class="text-white-50 small">Preferred Date & Time</label>
                                     <span asp-validation-for="BookingDate" class="text-danger small"></span>
                                 </div>
                             </div>
                             <div class="col-md-6 mb-4">
                                 <div class="form-floating">
-                                    <input asp-for="VehiclePlate" class="form-control bg-black border-dark-blue text-white" placeholder="Plate Number" style="height: 60px;" />
-                                    <label class="text-white-50 small">Plate Number</label>
+                                    <input asp-for="VehiclePlate" id="plateInput" 
+                                           class="form-control bg-black border-dark-blue text-white text-uppercase" 
+                                           placeholder="ABC 123" style="height: 60px;" />
+                                    <label class="text-white-50 small">Plate Number (e.g., ABC 123)</label>
                                     <span asp-validation-for="VehiclePlate" class="text-danger small"></span>
                                 </div>
                             </div>
@@ -79,7 +87,6 @@
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
 
-    /* Floating label fix for black background */
     .form-floating > .form-control:focus ~ label,
     .form-floating > .form-control:not(:placeholder-shown) ~ label,
     .form-floating > .form-select ~ label {
@@ -90,8 +97,92 @@
     input[type="datetime-local"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+  /* Specifically target the text inside the date-time picker */
+.custom-datetime-input {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 1.1rem !important; /* Slightly larger for readability */
+    font-weight: 500;
+    color: #ffffff !important;
+    letter-spacing: 0.5px;
+}
+
+/* Fix for the "placeholder" or empty state text color */
+.custom-datetime-input::-webkit-datetime-edit {
+    padding: 0 0.5rem;
+}
+
+.custom-datetime-input::-webkit-datetime-edit-fields-wrapper {
+    background: transparent;
+}
+
+/* Enhancing individual segments (Month, Day, Year, Time) */
+.custom-datetime-input::-webkit-datetime-edit-text,
+.custom-datetime-input::-webkit-datetime-edit-month-field,
+.custom-datetime-input::-webkit-datetime-edit-day-field,
+.custom-datetime-input::-webkit-datetime-edit-year-field,
+.custom-datetime-input::-webkit-datetime-edit-hour-field,
+.custom-datetime-input::-webkit-datetime-edit-minute-field,
+.custom-datetime-input::-webkit-datetime-edit-ampm-field {
+    color: #ffffff !important;
+}
+
+/* Subtle glow when the user clicks the field */
+.custom-datetime-input:focus {
+    text-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+}
 </style>
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const plateInput = document.getElementById('plateInput');
+
+            if (plateInput) {
+                plateInput.addEventListener('input', function (e) {
+                    // Removes all characters except letters and numbers and forces uppercase
+                    let rawValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    let formattedValue = "";
+
+                    if (rawValue.length > 0) {
+                        // Takes the first 3 characters and ensures they are letters
+                        let letters = rawValue.substring(0, 3).replace(/[^A-Z]/g, '');
+                        
+                        // Takes everything after the 3rd index and ensures they are numbers
+                        let numbers = rawValue.substring(3).replace(/[^0-9]/g, '');
+
+                        // Automatically inserts the space if the user types more than 3 characters
+                        if (rawValue.length > 3) {
+                            formattedValue = letters + " " + numbers;
+                        } else {
+                            formattedValue = letters;
+                        }
+                    }
+
+                    e.target.value = formattedValue;
+                });
+
+                // Prevents backspace from getting "stuck" when deleting the space character
+                plateInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && e.target.value.length === 4) {
+                        e.target.value = e.target.value.substring(0, 3);
+                        e.preventDefault();
+                    }
+                });
+            }
+                        /* Makes the entire field clickable and improves icon visibility */
+            .custom-datetime-input::-webkit-calendar-picker-indicator {
+                filter: invert(1) sepia(100%) saturate(500%) hue-rotate(200deg);
+                cursor: pointer;
+                position: absolute;
+                right: 15px;
+            }
+
+            /* Ensures the label stays visible and blue when focused, matching the Admin Access theme */
+            .form-floating > .custom-datetime-input:focus ~ label {
+                color: #0d6efd !important;
+}
+        });
+    </script>
 }

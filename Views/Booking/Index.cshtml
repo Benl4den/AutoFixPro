@@ -54,7 +54,6 @@
                     {
                         @foreach (var item in Model)
                         {
-                            // Logic to match the service name and get the price
                             var matchedService = services.FirstOrDefault(s =>
                             item.ServiceType != null && (
                             item.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
@@ -93,19 +92,18 @@
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a asp-action="Details" asp-route-id="@item.Id"
-                                               class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
+                                           class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         @if (item.Status != "Completed")
                                         {
-                                            <a asp-controller="Booking"
-                                                   asp-action="CompleteBooking"
-                                                   asp-route-id="@item.Id"
-                                                   class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
-                                                   onclick="return confirm('Mark this appointment as completed?');">
+                                            @* Fixed: Name now matches the script function below *@
+                                            <button type="button"
+                                                    class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
+                                                    onclick="confirmCompletionEnhanced('@item.Id')">
                                                 <i class="bi bi-check-lg"></i> Complete
-                                            </a>
+                                            </button>
                                         }
                                         else
                                         {
@@ -126,7 +124,8 @@
                         </td>
                         <td class="py-4">
                             @{
-                                decimal pendingTotal = Model
+                                // Renamed to 'finalRevenueTotal' to ensure it is unique in this file scope
+                                decimal finalRevenueTotal = Model
                                     .Where(a => a.Status == "Pending")
                                     .Sum(a =>
                                     {
@@ -138,24 +137,9 @@
                                     });
                             }
                             <div class="text-warning small text-uppercase x-small fw-bold">Pending Value</div>
-                            <div class="text-white fw-black fs-5">₱@pendingTotal.ToString("N0")</div>
+                            <div class="text-white fw-black fs-5">₱@finalRevenueTotal.ToString("N0")</div>
                         </td>
-                        <td colspan="4" class="text-end pe-4 py-4">
-                            @{
-                                decimal completedTotal = Model
-                                    .Where(a => a.Status == "Completed")
-                                    .Sum(a =>
-                                    {
-                                        var matched = services.FirstOrDefault(s =>
-                                            a.ServiceType != null && (
-                                            a.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
-                                            s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase)));
-                                        return matched?.Price ?? 0;
-                                    });
-                            }
-                            <div class="text-success small text-uppercase x-small fw-bold">Actual Revenue</div>
-                            <div class="text-white fw-black fs-5">₱@completedTotal.ToString("N0")</div>
-                        </td>
+                        <td></td><td></td><td></td><td></td>
                     </tr>
                 </tfoot>
             </table>
@@ -164,7 +148,6 @@
 </div>
 
 <style>
-    /* Premium Styling Overrides */
     .plate-badge {
         background-color: #f8f9fa;
         color: #1a1a1a;
@@ -179,21 +162,43 @@
         display: inline-block;
         text-transform: uppercase;
     }
-
-    .x-small {
-        font-size: 0.7rem;
-    }
-
+    .x-small { font-size: 0.7rem; }
     .table-hover tbody tr:hover {
         background-color: rgba(0, 123, 255, 0.03) !important;
         transition: all 0.3s ease;
     }
-
-    .bg-black {
-        background-color: #000 !important;
-    }
-
-    .fw-black {
-        font-weight: 900;
-    }
+    .bg-black { background-color: #000 !important; }
+    .fw-black { font-weight: 900; }
 </style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmCompletionEnhanced(bookingId) {
+            Swal.fire({
+                title: '<i class="bi bi-gear-wide-connected text-primary"></i> AUTOFIX <span class="text-primary">PRO</span>',
+                html: `
+                    <div class="swal-custom-container text-start">
+                        <h4 class="fw-bold text-center text-white text-uppercase mb-3">Confirm Completion?</h4>
+                        <div class="swal-details-card bg-black border border-dark rounded-3 p-3 mb-4">
+                            <p class="mb-2 text-white-50 small text-center">Finalizing request for:</p>
+                            <h5 class="fw-bold text-white mb-0 text-center">Booking ID: ${bookingId}</h5>
+                        </div>
+                    </div>
+                `,
+                background: '#0d0d0d',
+                color: '#ffffff',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                confirmButtonText: 'Yes, Complete Task',
+                customClass: {
+                    popup: 'border border-secondary rounded-4 shadow-lg'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Booking/CompleteBooking/' + bookingId;
+                }
+            });
+        }
+    </script>
+}

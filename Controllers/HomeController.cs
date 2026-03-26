@@ -20,6 +20,15 @@ namespace AutoFix_Pro.Controllers
 
         public async Task<IActionResult> Index()
         {
+            // --- START ADMIN REDIRECT LOGIC ---
+            // If a staff member is logged in, bypass the homepage and go to the Dashboard
+            if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("SuperAdmin")))
+            {
+                return RedirectToAction("Dashboard", "Booking");
+            }
+            // --- END ADMIN REDIRECT LOGIC ---
+
+            // Standard Customer Logic:
             // 1. Where(s => s.IsActive) - only shows services that are turned on
             // 2. OrderByDescending - puts the newest repairs at the top
             // 3. Take(3) - keeps the homepage clean by only showing the "Top 3"

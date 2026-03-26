@@ -4,6 +4,27 @@
     ViewData["Title"] = "Admin Login";
     Layout = "/Areas/Identity/Pages/_Layout.cshtml";
 }
+<style>
+    /* Fix for the white/yellow background on Autofill */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        /* Use an inset shadow to fill the background with black */
+        -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+        /* Force the text color to stay white */
+        -webkit-text-fill-color: white !important;
+        /* Ensure the border doesn't disappear */
+        border: 2px solid #004085 !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Optional: Transition to prevent the "flash" of white when the page loads */
+    input {
+        transition: background-color 5000s ease-in-out 0s;
+    }
+</style>
+
 
 <div class="identity-card shadow-lg">
     <div class="text-center mb-4">
@@ -41,13 +62,9 @@
             <p class="mb-1">
                 <a id="forgot-password" asp-page="./ForgotPassword" class="text-decoration-none small text-primary">Forgot your password?</a>
             </p>
-            <p class="mb-0">
-                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none small text-muted">Create a new admin account</a>
-            </p>
         </div>
     </form>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

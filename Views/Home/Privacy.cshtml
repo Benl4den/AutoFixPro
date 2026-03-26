@@ -1,6 +1,63 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-5 text-white">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">
+            <i class="bi bi-shield-check me-2"></i>Data Privacy & Integrity
+        </h1>
+        <p class="text-muted">How AutoFix Pro handles your service and vehicle information</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <div class="card bg-dark border-secondary h-100 p-4 shadow-lg rounded-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-database-fill text-primary fs-4"></i>
+                    </div>
+                    <h4 class="mb-0 fw-bold">Data Collection</h4>
+                </div>
+                <p class="text-muted small">
+                    We collect <strong>Customer Names</strong> and <strong>Vehicle Plate Numbers</strong> specifically to manage the appointment queue and identify vehicles during service.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card bg-dark border-secondary h-100 p-4 shadow-lg rounded-4">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-lock-fill text-primary fs-4"></i>
+                    </div>
+                    <h4 class="mb-0 fw-bold">Secure Access</h4>
+                </div>
+                <p class="text-muted small">
+                    Access to <strong>Revenue Statistics</strong> and <strong>Staff Management</strong> is restricted to authorized Super Admins only, ensuring your business data remains confidential.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 p-4 bg-dark border border-primary border-opacity-25 rounded-4 text-center">
+        <p class="mb-0 text-muted small">
+            <i class="bi bi-info-circle me-2 text-primary"></i>
+            <strong>Project Note:</strong> As a project for the <strong>College of Computer Studies</strong>, this application uses simulated data for demonstration purposes only.
+        </p>
+    </div>
+</div>
+
+<style>
+    /* Ensures the background matches your existing app theme */
+    body {
+        background-color: #0d0d0d !important;
+    }
+    .card {
+        transition: transform 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        border-color: #0d6efd !important;
+    }
+</style>

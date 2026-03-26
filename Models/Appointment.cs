@@ -21,7 +21,11 @@ namespace AutoFix_Pro.Models
 
         [Required]
         [Display(Name = "Plate Number")]
-        [RegularExpression(@"^[A-Z0-9\s-]+$", ErrorMessage = "Invalid Plate Number format")]
+        // Regex breakdown: 
+        // ^[A-Z]{3}  -> Exactly 3 uppercase letters at the start
+        // [ ]        -> Exactly one space
+        // \d+$       -> One or more digits until the end
+        [RegularExpression(@"^[A-Z]{3} \d+$", ErrorMessage = "Format must be 3 Letters followed by a space and numbers (e.g., ABC 123)")]
         public string VehiclePlate { get; set; } = string.Empty;
 
         [Required]
