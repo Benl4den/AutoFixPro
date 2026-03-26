@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using AutoFix_Pro.Data; // Added for Context
+using AutoFix_Pro.Models; // Added for ActivityLog
 
 namespace AutoFix_Pro.Areas.Identity.Pages.Account
 {
@@ -30,14 +31,15 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly AutoFix_ProContext _context; // 1. Added Context Field
 
-        // CHANGE THIS:
         public RegisterModel(
             UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore, // Fix this line right here
+            IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            AutoFix_ProContext context) // 2. Added Context to Constructor
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -45,6 +47,7 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context; // 3. Assigned Context
         }
 
         [BindProperty]
@@ -59,13 +62,11 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
-            // Logic: Ensures only corporate accounts can access the Admin Command Center
             [RegularExpression(@"^[a-zA-Z0-9._%+-]+@autofix\.pro$",
                 ErrorMessage = "Admin registration is restricted to @autofix.pro corporate emails.")]
             public string Email { get; set; }
 
             [Required]
-            // Logic: Increased from 6 to 8 for higher security standards
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
@@ -101,7 +102,6 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                     _logger.LogInformation("New account created successfully.");
 
                     // --- START ROLE ASSIGNMENT LOGIC ---
-                    // Current date check for audit logs: March 26, 2026
                     var isFirstUser = _userManager.Users.Count() == 1;
 
                     if (isFirstUser)
@@ -114,7 +114,18 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                         await _userManager.AddToRoleAsync(user, "Admin");
                         _logger.LogInformation("New user assigned 'Admin' role.");
                     }
-                    // --- END ROLE ASSIGNMENT LOGIC ---
+
+                    // --- 4. START SYSTEM LOGGING ---
+                    var log = new ActivityLog
+                    {
+                        UserEmail = User.Identity.Name ?? "System", // The SuperAdmin who is logged in
+                        Action = "User Created",
+                        Details = $"SuperAdmin registered a new staff account: {Input.Email}",
+                        Timestamp = DateTime.Now
+                    };
+                    _context.ActivityLogs.Add(log);
+                    await _context.SaveChangesAsync();
+                    // --- END SYSTEM LOGGING ---
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -122,8 +133,7 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        // Redirecting to Login so the new Admin can verify their access
-                        return RedirectToPage("Login");
+                        return RedirectToAction("Index", "UserManagement"); // Redirecting back to your Staff list
                     }
                 }
                 foreach (var error in result.Errors)
@@ -132,7 +142,6 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 

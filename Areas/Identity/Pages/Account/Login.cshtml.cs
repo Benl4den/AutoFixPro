@@ -1,35 +1,42 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
+using AutoFix_Pro.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using AutoFix_Pro.Data; // Ensure this is here for the Context
 
 namespace AutoFix_Pro.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager; // Added for role checking
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
+        // 1. Declare the context field
+        private readonly AutoFix_ProContext _context;
 
-        // Updated Constructor to include UserManager
+        // 2. Add AutoFix_ProContext to the constructor parameters
         public LoginModel(SignInManager<IdentityUser> signInManager,
                           UserManager<IdentityUser> userManager,
-                          ILogger<LoginModel> logger)
+                          ILogger<LoginModel> logger,
+                          AutoFix_ProContext context) // <--- Pass it here
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _context = context; // <--- Now this works
         }
 
         [BindProperty]
@@ -86,6 +93,18 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
 
+                    // --- SYSTEM LOGGING START ---
+                    var log = new ActivityLog
+                    {
+                        UserEmail = Input.Email,
+                        Action = "Login",
+                        Details = "Admin/SuperAdmin accessed the management system.",
+                        Timestamp = DateTime.Now
+                    };
+                    _context.ActivityLogs.Add(log);
+                    await _context.SaveChangesAsync();
+                    // --- SYSTEM LOGGING END ---
+
                     // Logic to redirect Admin or SuperAdmin to the Dashboard
                     var user = await _userManager.FindByEmailAsync(Input.Email);
                     if (user != null)
@@ -95,13 +114,13 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
 
                         if (isSuperAdmin || isAdmin)
                         {
-                            // Redirects to /Booking/Dashboard
                             return RedirectToAction("Dashboard", "Booking");
                         }
                     }
 
                     return LocalRedirect(returnUrl);
                 }
+
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });

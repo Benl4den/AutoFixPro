@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace AutoFix_Pro.Controllers
 {
-    // [Authorize] removed from here so guests can access the Index
     public class ServiceTicketsController : Controller
     {
         private readonly AutoFix_ProContext _context;
@@ -22,7 +21,6 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets
-        // GUESTS CAN ACCESS
         public async Task<IActionResult> Index(string searchString, string category)
         {
             var services = from s in _context.ServiceTicket
@@ -42,33 +40,27 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets/Details/5
-        // GUESTS CAN ACCESS
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var serviceTicket = await _context.ServiceTicket
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (serviceTicket == null)
-            {
-                return NotFound();
-            }
+
+            if (serviceTicket == null) return NotFound();
 
             return View(serviceTicket);
         }
 
         // GET: ServiceTickets/Create
-        [Authorize] // LOGIN REQUIRED
+        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: ServiceTickets/Create
-        [Authorize] // LOGIN REQUIRED
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ServiceName,Description,Price,ImageUrl,Category,CreatedAt,IsActive")] ServiceTicket serviceTicket)
@@ -76,6 +68,18 @@ namespace AutoFix_Pro.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(serviceTicket);
+
+                // --- LOGGING START ---
+                var log = new ActivityLog
+                {
+                    UserEmail = User.Identity.Name ?? "System",
+                    Action = "Service Created",
+                    Details = $"Added new service: {serviceTicket.ServiceName} with price ₱{serviceTicket.Price}",
+                    Timestamp = DateTime.Now
+                };
+                _context.ActivityLogs.Add(log);
+                // --- LOGGING END ---
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -83,50 +87,48 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets/Edit/5
-        [Authorize] // LOGIN REQUIRED
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var serviceTicket = await _context.ServiceTicket.FindAsync(id);
-            if (serviceTicket == null)
-            {
-                return NotFound();
-            }
+            if (serviceTicket == null) return NotFound();
+
             return View(serviceTicket);
         }
 
         // POST: ServiceTickets/Edit/5
-        [Authorize] // LOGIN REQUIRED
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ServiceName,Description,Price,ImageUrl,Category,CreatedAt,IsActive")] ServiceTicket serviceTicket)
         {
-            if (id != serviceTicket.Id)
-            {
-                return NotFound();
-            }
+            if (id != serviceTicket.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(serviceTicket);
+
+                    // --- LOGGING START ---
+                    var log = new ActivityLog
+                    {
+                        UserEmail = User.Identity.Name ?? "System",
+                        Action = "Service Edited",
+                        Details = $"Updated details for service: {serviceTicket.ServiceName}",
+                        Timestamp = DateTime.Now
+                    };
+                    _context.ActivityLogs.Add(log);
+                    // --- LOGGING END ---
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ServiceTicketExists(serviceTicket.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ServiceTicketExists(serviceTicket.Id)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -134,26 +136,21 @@ namespace AutoFix_Pro.Controllers
         }
 
         // GET: ServiceTickets/Delete/5
-        [Authorize] // LOGIN REQUIRED
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var serviceTicket = await _context.ServiceTicket
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (serviceTicket == null)
-            {
-                return NotFound();
-            }
+
+            if (serviceTicket == null) return NotFound();
 
             return View(serviceTicket);
         }
 
         // POST: ServiceTickets/Delete/5
-        [Authorize] // LOGIN REQUIRED
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -161,6 +158,17 @@ namespace AutoFix_Pro.Controllers
             var serviceTicket = await _context.ServiceTicket.FindAsync(id);
             if (serviceTicket != null)
             {
+                // --- LOGGING START ---
+                var log = new ActivityLog
+                {
+                    UserEmail = User.Identity.Name ?? "System",
+                    Action = "Service Deleted",
+                    Details = $"Removed service: {serviceTicket.ServiceName}",
+                    Timestamp = DateTime.Now
+                };
+                _context.ActivityLogs.Add(log);
+                // --- LOGGING END ---
+
                 _context.ServiceTicket.Remove(serviceTicket);
             }
 

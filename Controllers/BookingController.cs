@@ -72,7 +72,10 @@ namespace AutoFix_Pro.Controllers
         public async Task<IActionResult> Index()
         {
             var appointments = await _context.Appointments
-                .OrderByDescending(a => a.BookingDate)
+                // 1. Sort by Status: "Pending" gets priority (0), everything else comes after (1)
+                .OrderBy(a => a.Status == "Pending" ? 0 : 1)
+                // 2. Secondary sort: Keep the most recent bookings at the top within those groups
+                .ThenByDescending(a => a.BookingDate)
                 .ToListAsync();
 
             var services = await _context.ServiceTicket.ToListAsync();
@@ -120,7 +123,7 @@ namespace AutoFix_Pro.Controllers
         }
 
         // ==========================================
-        // ADMIN ACTIONS: Update Status
+        // ADMIN ACTIONS: Update Status & Log Activity
         // ==========================================
         [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpGet]
@@ -133,8 +136,23 @@ namespace AutoFix_Pro.Controllers
                 return NotFound();
             }
 
+            // 1. Update the record status
             appointment.Status = "Completed";
+
+            // 2. Create the audit log entry
+            var log = new ActivityLog
+            {
+                UserEmail = User.Identity.Name ?? "System",
+                Action = "Status Update",
+                Details = $"Marked Appointment ID {id} for {appointment.CustomerName} as Completed",
+                Timestamp = DateTime.Now
+            };
+
+            // 3. Add both changes to the context tracking
+            _context.ActivityLogs.Add(log);
             _context.Update(appointment);
+
+            // 4. Save both changes to the database in one single transaction
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));

@@ -19,6 +19,7 @@ namespace AutoFix_Pro.Data
         public DbSet<AutoFix_Pro.Models.ServiceTicket> ServiceTicket { get; set; } = default!;
 
         public DbSet<AutoFix_Pro.Models.Appointment> Appointments { get; set; } = default!;
+        public DbSet<AutoFix_Pro.Models.ActivityLog> ActivityLogs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

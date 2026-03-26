@@ -1,0 +1,60 @@
+﻿@model IEnumerable<AutoFix_Pro.Models.ActivityLog>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-white">
+            <i class="bi bi-journal-text text-primary me-2"></i> System Activity Logs
+        </h2>
+        <span class="badge bg-primary px-3 py-2">Total Logs: @Model.Count()</span>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead class="table-secondary text-dark">
+                        <tr>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model)
+                        {
+                            <tr>
+                                <td class="px-4 py-3">
+                                    <span class="text-info fw-semibold">@log.UserEmail</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @{
+                                        // Logic to assign colors based on the Action string
+                                        var badgeClass = log.Action switch
+                                        {
+                                            "Login" => "bg-info text-dark",
+                                            "User Created" => "bg-success",
+                                            "User Deleted" => "bg-danger",
+                                            "Service Created" => "bg-primary",
+                                            "Status Update" => "bg-warning text-dark",
+                                            _ => "bg-secondary" // Default for unknown actions
+                                        };
+                                    }
+                                    <span class="badge @badgeClass text-uppercase px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+                                        @log.Action
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 small text-white-50">
+                                    @log.Details
+                                </td>
+                                <td class="px-4 py-3 text-muted small">
+                                    <i class="bi bi-clock me-1"></i> @log.Timestamp.ToString("MMM dd, yyyy hh:mm tt")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
