@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Admin Dashboard - Bookings";
-    // Retrieve the list of services from the ViewBag
+    // Retrieve the list of services from the ViewBag to enable price matching
     var services = ViewBag.Services as List<AutoFix_Pro.Models.ServiceTicket> ?? new List<AutoFix_Pro.Models.ServiceTicket>();
 }
 
@@ -93,17 +93,17 @@
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a asp-action="Details" asp-route-id="@item.Id"
-                                           class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
+                                               class="btn btn-sm btn-outline-light rounded-pill px-3" title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </a>
 
                                         @if (item.Status != "Completed")
                                         {
                                             <a asp-controller="Booking"
-                                               asp-action="CompleteBooking"
-                                               asp-route-id="@item.Id"
-                                               class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
-                                               onclick="return confirm('Mark this appointment as completed?');">
+                                                   asp-action="CompleteBooking"
+                                                   asp-route-id="@item.Id"
+                                                   class="btn btn-sm btn-success rounded-pill px-3 shadow-sm"
+                                                   onclick="return confirm('Mark this appointment as completed?');">
                                                 <i class="bi bi-check-lg"></i> Complete
                                             </a>
                                         }
@@ -119,6 +119,45 @@
                         }
                     }
                 </tbody>
+                <tfoot class="bg-black border-top border-secondary">
+                    <tr>
+                        <td colspan="2" class="ps-4 py-4 text-muted small text-uppercase fw-bold">
+                            Revenue Statistics
+                        </td>
+                        <td class="py-4">
+                            @{
+                                decimal pendingTotal = Model
+                                    .Where(a => a.Status == "Pending")
+                                    .Sum(a =>
+                                    {
+                                        var matched = services.FirstOrDefault(s =>
+                                            a.ServiceType != null && (
+                                            a.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
+                                            s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase)));
+                                        return matched?.Price ?? 0;
+                                    });
+                            }
+                            <div class="text-warning small text-uppercase x-small fw-bold">Pending Value</div>
+                            <div class="text-white fw-black fs-5">₱@pendingTotal.ToString("N0")</div>
+                        </td>
+                        <td colspan="4" class="text-end pe-4 py-4">
+                            @{
+                                decimal completedTotal = Model
+                                    .Where(a => a.Status == "Completed")
+                                    .Sum(a =>
+                                    {
+                                        var matched = services.FirstOrDefault(s =>
+                                            a.ServiceType != null && (
+                                            a.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
+                                            s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase)));
+                                        return matched?.Price ?? 0;
+                                    });
+                            }
+                            <div class="text-success small text-uppercase x-small fw-bold">Actual Revenue</div>
+                            <div class="text-white fw-black fs-5">₱@completedTotal.ToString("N0")</div>
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -152,5 +191,9 @@
 
     .bg-black {
         background-color: #000 !important;
+    }
+
+    .fw-black {
+        font-weight: 900;
     }
 </style>

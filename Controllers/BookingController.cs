@@ -29,15 +29,25 @@ namespace AutoFix_Pro.Controllers
             var appointments = await _context.Appointments.ToListAsync();
             var services = await _context.ServiceTicket.ToListAsync();
 
-            // AGGRESSIVE MATCHING: If the service name is FOUND within the appointment's service type
+            // 1. Calculate Actual Revenue (Completed)
             decimal accurateRevenue = appointments
                 .Where(a => !string.IsNullOrEmpty(a.Status) && a.Status.Trim().Equals("Completed", StringComparison.OrdinalIgnoreCase))
                 .Sum(a => {
-                    // This looks for any service that matches the booking
                     var matchedService = services.FirstOrDefault(s =>
+                        a.ServiceType != null && (
                         a.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
-                        s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase));
+                        s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase)));
+                    return matchedService?.Price ?? 0;
+                });
 
+            // 2. Calculate Projected Revenue (Pending)
+            decimal projectedRevenue = appointments
+                .Where(a => !string.IsNullOrEmpty(a.Status) && a.Status.Trim().Equals("Pending", StringComparison.OrdinalIgnoreCase))
+                .Sum(a => {
+                    var matchedService = services.FirstOrDefault(s =>
+                        a.ServiceType != null && (
+                        a.ServiceType.Contains(s.ServiceName, StringComparison.OrdinalIgnoreCase) ||
+                        s.ServiceName.Contains(a.ServiceType, StringComparison.OrdinalIgnoreCase)));
                     return matchedService?.Price ?? 0;
                 });
 
@@ -46,6 +56,8 @@ namespace AutoFix_Pro.Controllers
                 TotalAppointments = appointments.Count,
                 PendingTasks = appointments.Count(a => a.Status == "Pending"),
                 TotalRevenue = accurateRevenue,
+                // FIXED: Now correctly assigning the calculated value to the ViewModel property
+                ProjectedRevenue = projectedRevenue,
                 ChartLabels = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" },
                 ChartData = new List<int> { 4, 7, 10, 5, 12, 8, 3 }
             };
@@ -56,14 +68,13 @@ namespace AutoFix_Pro.Controllers
         // ==========================================
         // ADMIN SIDE: View All Appointments (Table View)
         // ==========================================
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> Index()
         {
             var appointments = await _context.Appointments
                 .OrderByDescending(a => a.BookingDate)
                 .ToListAsync();
 
-            // Fetch services to allow the View to display prices for each appointment
             var services = await _context.ServiceTicket.ToListAsync();
             ViewBag.Services = services;
 
@@ -86,7 +97,6 @@ namespace AutoFix_Pro.Controllers
             };
 
             ViewBag.ServiceList = new SelectList(_context.ServiceTicket, "ServiceName", "ServiceName", serviceType);
-
             return View(model);
         }
 
@@ -112,7 +122,7 @@ namespace AutoFix_Pro.Controllers
         // ==========================================
         // ADMIN ACTIONS: Update Status
         // ==========================================
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpGet]
         public async Task<IActionResult> CompleteBooking(int id)
         {
@@ -124,7 +134,6 @@ namespace AutoFix_Pro.Controllers
             }
 
             appointment.Status = "Completed";
-
             _context.Update(appointment);
             await _context.SaveChangesAsync();
 

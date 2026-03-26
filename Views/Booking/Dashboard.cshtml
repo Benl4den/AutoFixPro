@@ -43,6 +43,10 @@
             color: black;
             box-shadow: 0 0 15px var(--neon-blue);
         }
+
+    .x-small {
+        font-size: 0.7rem;
+    }
 </style>
 
 <div class="container-fluid py-5 bg-black min-vh-100 text-white">
@@ -65,15 +69,23 @@
         <div class="col-md-4">
             <div class="glass-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <small class="text-muted text-uppercase fw-bold">Total Revenue</small>
+                    <small class="text-muted text-uppercase fw-bold">Actual Revenue</small>
                     <i class="bi bi-currency-dollar text-success fs-4"></i>
                 </div>
-                <h2 class="stat-value fw-bold text-success">₱@Model.TotalRevenue.ToString("N0")</h2>
-                <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
-                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                <h2 class="stat-value fw-bold text-success mb-1">₱@Model.TotalRevenue.ToString("N0")</h2>
+                
+                <hr class="my-3" style="border-color: rgba(255,255,255,0.1);">
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-warning fw-bold mb-0">₱@Model.ProjectedRevenue.ToString("N0")</div>
+                        <div class="text-muted x-small text-uppercase fw-bold" style="letter-spacing: 1px;">Projected (Pending)</div>
+                    </div>
+                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 x-small">FORECAST</span>
                 </div>
             </div>
         </div>
+
         <div class="col-md-4">
             <div class="glass-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -82,10 +94,11 @@
                 </div>
                 <h2 class="stat-value fw-bold text-info">@Model.TotalAppointments</h2>
                 <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
-                    <div class="progress-bar bg-info" style="width: 60%"></div>
+                    <div class="progress-bar bg-info" style="width: 100%"></div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-4">
             <div class="glass-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -94,7 +107,12 @@
                 </div>
                 <h2 class="stat-value fw-bold text-warning">@Model.PendingTasks</h2>
                 <div class="progress mt-3" style="height: 4px; background: rgba(255,255,255,0.1);">
-                    <div class="progress-bar bg-warning" style="width: 40%"></div>
+                    @{
+                        var pendingPercentage = Model.TotalAppointments > 0
+                            ? (Model.PendingTasks * 100 / Model.TotalAppointments)
+                            : 0;
+                    }
+                    <div class="progress-bar bg-warning" style="width: @pendingPercentage%"></div>
                 </div>
             </div>
         </div>
@@ -118,7 +136,7 @@
             <div class="glass-card p-4 h-100">
                 <h5 class="text-uppercase fw-bold mb-4">Quick Operations</h5>
                 <div class="d-grid gap-3">
-                    @if (User.IsInRole("SuperAdmin"))
+                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
                     {
                         <a asp-action="Index" class="nav-btn btn btn-lg text-start p-3 d-flex align-items-center">
                             <i class="bi bi-grid-3x3-gap me-3 fs-4"></i>
@@ -159,45 +177,43 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('performanceChart').getContext('2d');
-
-        // Custom Gradient for Chart
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, 'rgba(0, 210, 255, 0.4)');
         gradient.addColorStop(1, 'rgba(0, 210, 255, 0)');
 
         new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: @Html.Raw(Json.Serialize(Model.ChartLabels)),
-                datasets: [{
-                    label: 'Service Volume',
-                    data: @Html.Raw(Json.Serialize(Model.ChartData)),
-                    borderColor: '#00d2ff',
-                    borderWidth: 3,
-                    pointBackgroundColor: '#00d2ff',
-                    pointBorderColor: 'rgba(255,255,255,0.5)',
-                    pointHoverRadius: 6,
-                    fill: true,
-                    backgroundColor: gradient,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: '#666', font: { size: 10 } },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
-                    },
-                    x: {
-                        ticks: { color: '#666', font: { size: 10 } },
-                        grid: { display: false }
-                    }
-                }
-            }
+        type: 'line',
+        data: {
+        labels: @Html.Raw(Json.Serialize(Model.ChartLabels)),
+        datasets: [{
+        label: 'Service Volume',
+        data: @Html.Raw(Json.Serialize(Model.ChartData)),
+        borderColor: '#00d2ff',
+        borderWidth: 3,
+        pointBackgroundColor: '#00d2ff',
+        pointBorderColor: 'rgba(255,255,255,0.5)',
+        pointHoverRadius: 6,
+        fill: true,
+        backgroundColor: gradient,
+        tension: 0.4
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+        y: {
+        beginAtZero: true,
+        ticks: { color: '#666', font: { size: 10 } },
+        grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        x: {
+        ticks: { color: '#666', font: { size: 10 } },
+        grid: { display: false }
+        }
+        }
+        }
         });
     </script>
 }
