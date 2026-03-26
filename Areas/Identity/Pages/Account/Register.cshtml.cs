@@ -31,9 +31,10 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
+        // CHANGE THIS:
         public RegisterModel(
             UserManager<IdentityUser> userManager,
-            IUserStore<IdentityUser> userStore,
+            IUserStore<IdentityUser> userStore, // Fix this line right here
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
@@ -58,10 +59,14 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
+            // Logic: Ensures only corporate accounts can access the Admin Command Center
+            [RegularExpression(@"^[a-zA-Z0-9._%+-]+@autofix\.pro$",
+                ErrorMessage = "Admin registration is restricted to @autofix.pro corporate emails.")]
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            // Logic: Increased from 6 to 8 for higher security standards
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }
@@ -96,7 +101,7 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                     _logger.LogInformation("New account created successfully.");
 
                     // --- START ROLE ASSIGNMENT LOGIC ---
-                    // Check if this is the very first user in the database
+                    // Current date check for audit logs: March 26, 2026
                     var isFirstUser = _userManager.Users.Count() == 1;
 
                     if (isFirstUser)
@@ -117,6 +122,7 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                     }
                     else
                     {
+                        // Redirecting to Login so the new Admin can verify their access
                         return RedirectToPage("Login");
                     }
                 }
@@ -126,6 +132,7 @@ namespace AutoFix_Pro.Areas.Identity.Pages.Account
                 }
             }
 
+            // If we got this far, something failed, redisplay form
             return Page();
         }
 

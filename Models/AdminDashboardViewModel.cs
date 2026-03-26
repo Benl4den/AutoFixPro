@@ -11,4 +11,4 @@
         public List<string> ChartLabels { get; set; } = new();
         public List<int> ChartData { get; set; } = new();
     }
-}a
+}

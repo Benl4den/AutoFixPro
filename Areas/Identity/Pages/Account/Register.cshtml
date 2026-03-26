@@ -5,39 +5,98 @@
     Layout = "/Areas/Identity/Pages/_Layout.cshtml";
 }
 
-<div class="identity-card shadow-lg">
+<div class="identity-card shadow-lg p-4">
     <div class="text-center mb-4">
         <h4 class="fw-bold text-white">Create Admin Account</h4>
         <p class="text-muted small">Register your credentials for AutoFix Pro access</p>
     </div>
 
     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-3" role="alert"></div>
 
         <div class="form-floating mb-3">
-            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-            <label asp-for="Input.Email" class="text-muted">Email Address</label>
-            <span asp-validation-for="Input.Email" class="text-danger"></span>
+            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@autofix.pro" />
+            <label asp-for="Input.Email" class="text-muted">Corporate Email (@("@autofix.pro"))</label>
+            <span asp-validation-for="Input.Email" class="text-danger x-small"></span>
         </div>
 
         <div class="form-floating mb-3">
-            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-            <label asp-for="Input.Password" class="text-muted">Password</label>
-            <span asp-validation-for="Input.Password" class="text-danger"></span>
+            <input asp-for="Input.Password" id="pwInput" class="form-control bg-dark text-white border-secondary" autocomplete="new-password" aria-required="true" placeholder="password" />
+            <label asp-for="Input.Password" class="text-muted small">Password (Min. 8 characters)</label>
+    
+            <div class="progress mt-2" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                <div id="pwStrengthBar" class="progress-bar" role="progressbar" style="width: 0%; transition: width 0.4s ease, background-color 0.4s ease;"></div>
+            </div>
+            <small id="pwFeedback" class="text-muted x-small mt-1 d-block">Strength: Waiting for input...</small>
+    
+            <span asp-validation-for="Input.Password" class="text-danger x-small"></span>
         </div>
 
         <div class="form-floating mb-4">
             <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
             <label asp-for="Input.ConfirmPassword" class="text-muted">Confirm Password</label>
-            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            <span asp-validation-for="Input.ConfirmPassword" class="text-danger x-small"></span>
         </div>
 
         <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary shadow-sm py-3 fw-bold">
             <i class="bi bi-person-plus-fill me-2"></i>Register Admin
         </button>
     </form>
+
+    <div class="mt-4 p-3 rounded bg-info bg-opacity-10 border border-info border-opacity-25">
+        <h6 class="text-info fw-bold mb-2 small">
+            <i class="bi bi-shield-lock-fill me-2"></i>Security Requirements
+        </h6>
+        <ul class="text-muted x-small mb-0 ps-3">
+            <li>Must use an <strong>@@autofix.pro</strong> email address.</li>
+            <li>Password must be at least <strong>8 characters</strong> long.</li>
+            <li>Accounts gain access to <strong>Financial Data</strong> and <strong>Booking Management</strong>.</li>
+        </ul>
+    </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Use DOMContentLoaded to ensure the elements exist before the script runs
+        document.addEventListener('DOMContentLoaded', function () {
+            const pwInput = document.getElementById('pwInput');
+            const pwBar = document.getElementById('pwStrengthBar');
+            const pwFeedback = document.getElementById('pwFeedback');
+
+            // Defensive check to prevent "black screen" crashes
+            if (!pwInput || !pwBar || !pwFeedback) return;
+
+            pwInput.addEventListener('input', function () {
+                const val = pwInput.value;
+                let strength = 0;
+
+                if (val.length >= 4) strength += 25;
+                if (val.length >= 8) strength += 25;
+                if (/[A-Z]/.test(val) && /[a-z]/.test(val)) strength += 25;
+                if (/[0-9]/.test(val) || /[^A-Za-z0-9]/.test(val)) strength += 25;
+
+                pwBar.style.width = strength + '%';
+
+                if (strength <= 25) {
+                    pwBar.className = 'progress-bar bg-danger';
+                    pwFeedback.innerText = 'Strength: Very Weak';
+                    pwFeedback.className = 'text-danger x-small mt-1 d-block';
+                } else if (strength <= 50) {
+                    pwBar.className = 'progress-bar bg-warning';
+                    pwFeedback.innerText = 'Strength: Weak (Need 8+ chars)';
+                    pwFeedback.className = 'text-warning x-small mt-1 d-block';
+                } else if (strength <= 75) {
+                    pwBar.className = 'progress-bar bg-info';
+                    pwFeedback.innerText = 'Strength: Good';
+                    pwFeedback.className = 'text-info x-small mt-1 d-block';
+                } else {
+                    pwBar.className = 'progress-bar bg-success';
+                    pwFeedback.innerText = 'Strength: Strong Admin Password';
+                    pwFeedback.className = 'text-success x-small mt-1 d-block';
+                }
+            });
+        });
+    </script>
+}
 }
